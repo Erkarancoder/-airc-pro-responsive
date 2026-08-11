@@ -1,0 +1,54 @@
+/* ═══════════════════════════════════════════
+   theme-light.css — Light Mode overlay
+   Loaded AFTER index.css / theme-pro.css. Every rule here is
+   scoped to html[data-theme="light"], so with no attribute set
+   (or set to "dark") the app renders exactly as before — nothing
+   here changes the default dark theme.
+   The attribute is applied by js/settingsStore.js.
+═══════════════════════════════════════════ */
+
+html[data-theme="light"] {
+  --bg:        #f3f6fa;
+  --surface:   #ffffff;
+  --surface2:  #eef2f7;
+  --border:    rgba(0,120,100,.16);
+  --accent:    #00a58a;
+  --accent2:   #0077cc;
+  --danger:    #e0293d;
+  --warn:      #c97a12;
+  --muted:     #64798f;
+  --text:      #16232f;
+  --text2:     #3f5872;
+  --glow:      0 0 18px rgba(0,165,138,.16);
+
+  --glass-bg:     rgba(255,255,255,.7);
+  --glass-border: rgba(15,35,50,.08);
+}
+
+html[data-theme="light"] body { background: var(--bg); }
+html[data-theme="light"] .noise { opacity: .12; }
+
+html[data-theme="light"] .card {
+  box-shadow: 0 8px 24px rgba(20,40,55,.08);
+}
+
+html[data-theme="light"] .q-text { color: #16232f; }
+
+html[data-theme="light"] .modal-backdrop {
+  background: rgba(180,195,210,.55);
+}
+
+html[data-theme="light"] .timer-badge {
+  background: rgba(255,255,255,.75);
+}
+
+html[data-theme="light"] .btn.primary {
+  background: linear-gradient(135deg, #d4f3ec, #baeadf);
+}
+
+html[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--border); }
+
+/* Site nav (landing/pricing) glass tint in light mode */
+html[data-theme="light"] .site-nav {
+  background: rgba(255,255,255,.75);
+}

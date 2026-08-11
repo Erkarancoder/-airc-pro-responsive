@@ -1,0 +1,128 @@
+/* ═══════════════════════════════════════════
+   theme-pro.css — SaaS polish layer
+   Loaded AFTER index.css. Adds glassmorphism,
+   animations, skeletons, plan badges and extra
+   mobile responsiveness without touching the
+   original stylesheet or markup contracts.
+═══════════════════════════════════════════ */
+
+:root {
+  --glass-bg: rgba(17, 25, 38, .55);
+  --glass-border: rgba(255,255,255,.08);
+  --glass-blur: 14px;
+  --ease: cubic-bezier(.16,.84,.44,1);
+}
+
+/* Upgrade every existing .card to true glassmorphism, non-destructively */
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)), var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,.35);
+  animation: fadeUp .45s var(--ease) both;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease);
+}
+.card:hover { border-color: rgba(0,221,180,.28) !important; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pulseGlow { 0%,100% { box-shadow: 0 0 0 rgba(0,221,180,0);} 50% { box-shadow: 0 0 22px rgba(0,221,180,.25);} }
+@keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Buttons: subtle lift + glow */
+.btn {
+  transition: transform .18s var(--ease), box-shadow .18s var(--ease), filter .18s var(--ease) !important;
+}
+.btn:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.08); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn.primary { animation: pulseGlow 3.2s ease-in-out infinite; }
+
+/* Tabs: smooth underline transition */
+.tab { transition: color .2s var(--ease); position: relative; }
+.tab.active::after {
+  content: ''; position: absolute; left: 8px; right: 8px; bottom: -14px; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 2px; animation: fadeIn .3s var(--ease);
+}
+
+/* Tab panel transition */
+.tab-panel { animation: fadeIn .3s var(--ease); }
+
+/* ── Plan badge (topbar) ── */
+.plan-badge {
+  font-size: 10px; letter-spacing: 1.5px; font-family: var(--font-mono);
+  padding: 4px 10px; border-radius: 20px; text-transform: uppercase;
+  border: 1px solid var(--border); color: var(--text2);
+}
+.plan-badge.free    { color: var(--muted); }
+.plan-badge.pro     { color: var(--accent2); border-color: rgba(0,170,255,.35); box-shadow: 0 0 12px rgba(0,170,255,.15); }
+.plan-badge.premium { color: #ffd36e; border-color: rgba(255,211,110,.4); box-shadow: 0 0 12px rgba(255,211,110,.18); }
+
+/* Small "PRO" / "PREMIUM" feature chips, usable anywhere */
+.tier-chip {
+  display: inline-block; font-size: 9px; letter-spacing: 1px; font-family: var(--font-mono);
+  padding: 1px 6px; border-radius: 8px; margin-left: 6px; vertical-align: middle;
+  background: rgba(0,170,255,.12); color: var(--accent2); border: 1px solid rgba(0,170,255,.3);
+}
+.tier-chip.premium { background: rgba(255,211,110,.12); color: #ffd36e; border-color: rgba(255,211,110,.35); }
+
+/* ── Skeleton loaders ── */
+.skeleton {
+  position: relative; overflow: hidden; border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255,255,255,.04) 25%, rgba(255,255,255,.09) 37%, rgba(255,255,255,.04) 63%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+.skel-line { height: 12px; margin: 8px 0; }
+.skel-card { height: 90px; }
+.skel-circle { border-radius: 50%; }
+
+/* ── Spinner ── */
+.spinner {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.15); border-top-color: var(--accent);
+  animation: spin .7s linear infinite; display: inline-block;
+}
+
+/* ── Toast polish ── */
+#toastContainer { display: flex; flex-direction: column; gap: 8px; z-index: 999; }
+.toast {
+  backdrop-filter: blur(10px);
+  animation: fadeUp .3s var(--ease);
+  box-shadow: 0 6px 24px rgba(0,0,0,.4);
+}
+
+/* ── Better typography rhythm ── */
+h1, h2, h3 { letter-spacing: -0.3px; }
+.card p, .card li { line-height: 1.55; }
+
+/* ── Site nav (landing/pricing shared) ── */
+.site-nav {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px clamp(20px, 5vw, 64px);
+  background: rgba(8,12,18,.7); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-border);
+}
+.site-nav .logo { cursor: pointer; }
+.site-nav-links { display: flex; align-items: center; gap: 26px; font-size: 13px; }
+.site-nav-links a { color: var(--text2); text-decoration: none; transition: color .2s; }
+.site-nav-links a:hover { color: var(--accent); }
+
+/* ── Mobile responsiveness additions ── */
+@media (max-width: 640px) {
+  html { font-size: 13px; }
+  .topbar { flex-wrap: wrap; row-gap: 10px; }
+  .tabs { order: 3; width: 100%; overflow-x: auto; justify-content: flex-start; }
+  .interview-grid { grid-template-columns: 1fr !important; }
+  .col-right { order: 3; }
+  .site-nav-links { display: none; }
+  .dash-hero { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 420px) {
+  .app { padding: 0 12px 30px; }
+  .controls { flex-direction: column; }
+  .controls .btn { width: 100%; }
+}

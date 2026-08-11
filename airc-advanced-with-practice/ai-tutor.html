@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Practice — A.I.R.C. Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="theme-pro.css" />
+  <link rel="stylesheet" href="ai-tutor.css" />
+
+  <script src="auth.js"></script>
+  <script>
+    /* Auth guard: redirect to login if not authenticated — same pattern as index.html */
+    (function() {
+      if (!window.AIRC_AUTH || !window.AIRC_AUTH.isLoggedIn()) {
+        window.location.href = 'auth.html';
+      }
+    })();
+  </script>
+  <script defer src="db.js"></script>
+  <script defer src="js/profileDb.js"></script>
+  <script defer src="js/profileCore.js"></script>
+
+  <!-- Practice module — isolated, self-contained scripts -->
+  <script defer src="js/voiceService.js"></script>
+  <script defer src="js/speechRecognitionService.js"></script>
+  <script defer src="js/speechComparisonService.js"></script>
+  <script defer src="js/practiceContent.js"></script>
+  <script defer src="js/practiceCommon.js"></script>
+  <script defer src="js/communicationPractice.js"></script>
+  <script defer src="js/gdPractice.js"></script>
+  <script defer src="js/interviewPractice.js"></script>
+  <script defer src="js/practicePresence.js"></script>
+  <script defer src="js/aiTutor.js"></script>
+</head>
+<body class="pz-body">
+
+<!-- MOBILE / TABLET TOP BAR — only visible below the desktop breakpoint -->
+<header class="pz-mobile-topbar">
+  <button class="pz-hamburger-btn" id="pzHamburgerBtn" type="button" aria-label="Open menu" aria-controls="pzSidebar" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="pz-mobile-logo">
+    <span class="pz-logo-mark">◈</span>
+    <span class="pz-logo-text">A.I.R.C.</span>
+  </div>
+  <button class="pz-members-toggle-btn" id="pzMembersToggleBtn" type="button" aria-label="Show members" aria-controls="pzMembersPanel" aria-expanded="false">
+    <span class="pz-members-toggle-ico">👥</span>
+    <span class="pz-members-toggle-count" id="pzMobileMembersCount">1</span>
+  </button>
+</header>
+
+<!-- Shared dim backdrop for the sidebar / members drawers on mobile & tablet -->
+<div class="pz-overlay" id="pzOverlay"></div>
+
+<div class="pz-shell">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="pz-sidebar" id="pzSidebar">
+    <button class="pz-sidebar-close-btn" id="pzSidebarCloseBtn" type="button" aria-label="Close menu">✕</button>
+    <div class="pz-logo">
+      <span class="pz-logo-mark">◈</span>
+      <span class="pz-logo-text">A.I.R.C.</span>
+    </div>
+
+    <nav class="pz-nav">
+      <div class="pz-nav-item" data-nav="home">
+        <span class="pz-nav-ico">⌂</span> Home
+      </div>
+      <div class="pz-nav-item" data-nav="profile">
+        <span class="pz-nav-ico">☺</span> Profile
+      </div>
+      <div class="pz-nav-item pz-nav-active" data-view="home">
+        <span class="pz-nav-ico">🎯</span> Practice
+      </div>
+    </nav>
+
+    <div class="pz-nav-section-title">PRACTICE</div>
+    <nav class="pz-nav">
+      <div class="pz-nav-item" data-view="communication">
+        <span class="pz-nav-ico">🎤</span> Communication Skills
+      </div>
+      <div class="pz-nav-item" data-view="gd">
+        <span class="pz-nav-ico">👥</span> Group Discussion
+      </div>
+      <div class="pz-nav-item" data-view="interview">
+        <span class="pz-nav-ico">💼</span> Interview Practice
+      </div>
+    </nav>
+
+    <div class="pz-sidebar-bottom">
+      <div class="pz-voice-settings">
+        <label for="pzVoiceSpeed">🔊 Voice Speed</label>
+        <select id="pzVoiceSpeed">
+          <option value="0.7">0.7x</option>
+          <option value="0.8" selected>0.8x</option>
+          <option value="0.9">0.9x</option>
+          <option value="1.0">1.0x</option>
+        </select>
+      </div>
+      <div class="pz-side-user" data-nav="profile">
+        <div class="pz-side-avatar" id="pzUserAvatar">K</div>
+        <span id="pzUserBadge">Profile</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="pz-main">
+
+    <!-- ══ HOME VIEW ══ -->
+    <section class="pz-view pz-view-active" id="pzView-home">
+      <div class="pz-home-header">
+        <h1>Hi <em id="pzHeroName">there</em>. Let's build your communication skills.</h1>
+        <p>Choose a practice mode below. Speak naturally — your AI mentor will listen, correct, and guide you in real time.</p>
+      </div>
+
+      <div class="pz-card-grid">
+
+        <div class="pz-card" data-open="communication">
+          <div class="pz-card-top">
+            <div class="pz-card-icon pz-card-icon-comm">🎤</div>
+            <div>
+              <div class="pz-card-title">Communication Skills</div>
+              <div class="pz-card-mentor">Guided by Neha Ma'am</div>
+            </div>
+          </div>
+          <p class="pz-card-desc">Improve your spoken English through guided sentence practice, pronunciation correction, vocabulary improvement and repeated speaking exercises.</p>
+          <div class="pz-tags">
+            <span class="pz-tag">Pronunciation</span>
+            <span class="pz-tag">Vocabulary</span>
+            <span class="pz-tag">Sentence Practice</span>
+            <span class="pz-tag">Speaking Confidence</span>
+          </div>
+          <button class="pz-card-btn">Start Practice</button>
+        </div>
+
+        <div class="pz-card" data-open="gd">
+          <div class="pz-card-top">
+            <div class="pz-card-icon pz-card-icon-gd">👥</div>
+            <div>
+              <div class="pz-card-title">Group Discussion</div>
+              <div class="pz-card-mentor">Guided by Breesh Sir</div>
+            </div>
+          </div>
+          <p class="pz-card-desc">Practice real-world group discussion topics, especially technology and current professional topics. Get instant AI feedback on clarity, grammar, vocabulary and presentation.</p>
+          <div class="pz-tags">
+            <span class="pz-tag">GD Topics</span>
+            <span class="pz-tag">Speaking Practice</span>
+            <span class="pz-tag">Instant Correction</span>
+            <span class="pz-tag">Professional Communication</span>
+          </div>
+          <button class="pz-card-btn">Start GD</button>
+        </div>
+
+        <div class="pz-card" data-open="interview">
+          <div class="pz-card-top">
+            <div class="pz-card-icon pz-card-icon-int">💼</div>
+            <div>
+              <div class="pz-card-title">Interview Practice</div>
+              <div class="pz-card-mentor">Guided by Deep Sir</div>
+            </div>
+          </div>
+          <p class="pz-card-desc">Practice HR and technical interview questions with an AI interviewer. Answer naturally and receive feedback on communication, clarity and vocabulary.</p>
+          <div class="pz-tags">
+            <span class="pz-tag">HR Interview</span>
+            <span class="pz-tag">Technical Interview</span>
+            <span class="pz-tag">Answer Practice</span>
+            <span class="pz-tag">AI Feedback</span>
+          </div>
+          <button class="pz-card-btn">Start Interview</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══ COMMUNICATION SKILLS VIEW ══ -->
+    <section class="pz-view" id="pzView-communication">
+      <div class="pz-session-header">
+        <button class="pz-back-btn" data-back-home>← Back</button>
+        <div class="pz-session-mentor">
+          <div class="pz-avatar pz-avatar-female">N</div>
+          <div>
+            <div class="pz-session-title">Communication Skills</div>
+            <div class="pz-session-sub">Guided by Neha Ma'am · <span class="pz-online-dot"></span> AI Tutor Online</div>
+          </div>
+        </div>
+        <div class="pz-session-meta">
+          <span class="pz-badge" id="commLevelBadge">Beginner</span>
+          <span class="pz-progress-text" id="commProgress">Sentence 1</span>
+        </div>
+      </div>
+
+      <div class="pz-chat" id="commChatList"></div>
+
+      <div class="pz-mic-bar">
+        <button class="pz-mic-btn" id="commMicBtn">🎤 Speak</button>
+        <span class="pz-mic-status" id="commMicStatus">Ready</span>
+      </div>
+    </section>
+
+    <!-- ══ GROUP DISCUSSION VIEW ══ -->
+    <section class="pz-view" id="pzView-gd">
+      <div class="pz-session-header">
+        <button class="pz-back-btn" data-back-home>← Back</button>
+        <div class="pz-session-mentor">
+          <div class="pz-avatar pz-avatar-male">B</div>
+          <div>
+            <div class="pz-session-title">Group Discussion</div>
+            <div class="pz-session-sub">Guided by Breesh Sir · <span class="pz-online-dot"></span> AI Moderator</div>
+          </div>
+        </div>
+        <div class="pz-session-meta">
+          <span class="pz-badge" id="gdStageBadge">Opening</span>
+        </div>
+      </div>
+
+      <div class="pz-topic-banner" id="gdTopicBadge">Loading topic…</div>
+
+      <div class="pz-chat" id="gdChatList"></div>
+
+      <div class="pz-mic-bar">
+        <button class="pz-mic-btn" id="gdMicBtn">🎤 Speak</button>
+        <span class="pz-mic-status" id="gdMicStatus">Ready</span>
+      </div>
+
+      <div class="pz-report-panel" id="gdReportPanel" hidden></div>
+    </section>
+
+    <!-- ══ INTERVIEW PRACTICE VIEW ══ -->
+    <section class="pz-view" id="pzView-interview">
+      <div class="pz-session-header">
+        <button class="pz-back-btn" data-back-home>← Back</button>
+        <div class="pz-session-mentor">
+          <div class="pz-avatar pz-avatar-male">D</div>
+          <div>
+            <div class="pz-session-title">Interview Practice</div>
+            <div class="pz-session-sub">Guided by Deep Sir · <span class="pz-online-dot"></span> AI Interviewer</div>
+          </div>
+        </div>
+        <div class="pz-session-meta">
+          <span class="pz-badge" id="intCategoryBadge"></span>
+          <span class="pz-progress-text" id="intProgress"></span>
+        </div>
+      </div>
+
+      <!-- Category picker (shown before a session starts) -->
+      <div class="pz-category-picker" id="intCategoryPicker">
+        <p class="pz-category-intro">Choose a question category to begin:</p>
+        <div class="pz-category-grid">
+          <button class="pz-category-btn" data-category="HR">HR</button>
+          <button class="pz-category-btn" data-category="Technical">Technical</button>
+          <button class="pz-category-btn" data-category="ProjectBased">Project Based</button>
+          <button class="pz-category-btn" data-category="Behavioral">Behavioral</button>
+          <button class="pz-category-btn" data-category="Java">Java</button>
+          <button class="pz-category-btn" data-category="JavaScript">JavaScript</button>
+          <button class="pz-category-btn" data-category="React">React</button>
+          <button class="pz-category-btn" data-category="NodeJS">Node.js</button>
+          <button class="pz-category-btn" data-category="SQL">SQL</button>
+          <button class="pz-category-btn" data-category="DBMS">DBMS</button>
+        </div>
+      </div>
+
+      <div id="intSessionArea" hidden>
+        <div class="pz-chat" id="intChatList"></div>
+        <div class="pz-mic-bar">
+          <button class="pz-mic-btn" id="intMicBtn">🎤 Speak</button>
+          <span class="pz-mic-status" id="intMicStatus">Ready</span>
+        </div>
+        <div class="pz-report-panel" id="intReportPanel" hidden></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RIGHT SIDE — MEMBER PANEL (Practice module only) -->
+  <aside class="pz-members-panel" id="pzMembersPanel">
+    <button class="pz-members-close-btn" id="pzMembersCloseBtn" type="button" aria-label="Close members panel">✕</button>
+    <div class="pz-members-header">
+      <span class="pz-members-title" id="pzMembersCount">1 Member</span>
+    </div>
+    <div class="pz-members-list" id="pzMembersList">
+      <!-- populated live by js/practicePresence.js -->
+    </div>
+  </aside>
+
+</div>
+
+</body>
+</html>

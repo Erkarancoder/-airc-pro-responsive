@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Settings — A.I.R.C. Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <script src="auth.js"></script>
+  <script src="js/settingsStore.js"></script>
+  <script>
+    /* Auth guard: redirect to login if not authenticated — same pattern as index.html/profile.html */
+    (function() {
+      if (!window.AIRC_AUTH || !window.AIRC_AUTH.isLoggedIn()) {
+        window.location.href = 'auth.html';
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="theme-pro.css" />
+  <link rel="stylesheet" href="theme-light.css" />
+  <link rel="stylesheet" href="chat-assistant.css" />
+  <link rel="stylesheet" href="profile.css" />
+  <link rel="stylesheet" href="settings.css" />
+
+  <script defer src="db.js"></script>
+  <script defer src="js/profileCore.js"></script>
+  <script defer src="js/profileDb.js"></script>
+  <script defer src="js/settings.js"></script>
+  <script defer src="js/chatAssistant.js"></script>
+</head>
+<body>
+
+<!-- TOAST CONTAINER (same pattern as index.html / profile.html) -->
+<div id="toastContainer"></div>
+
+<!-- NOISE OVERLAY -->
+<div class="noise"></div>
+
+<div class="settings-app">
+
+  <div class="settings-topbar">
+    <div class="topbar-left" style="display:flex;align-items:center;gap:14px">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">A.I.R.C. <em>Pro</em></span>
+      </div>
+      <a href="index.html" class="profile-back-link">‹ Back to Interview</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span id="settingsUserBadge" style="font-size:11px;color:var(--muted);font-family:var(--font-mono)"></span>
+      <button onclick="AIRC_AUTH.logout()" style="font-size:10px;letter-spacing:1px;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,71,87,.3);background:transparent;color:#ff6b7a;cursor:pointer;font-family:var(--font-mono);transition:all .2s" onmouseover="this.style.background='rgba(255,71,87,.1)'" onmouseout="this.style.background='transparent'">LOGOUT</button>
+    </div>
+  </div>
+
+  <div class="settings-header">
+    <h1>◈ Settings</h1>
+    <p>Customize your A.I.R.C. Pro experience — everything here is saved on this device.</p>
+  </div>
+
+  <div class="settings-layout">
+
+    <!-- SECTION NAV -->
+    <nav class="settings-nav" id="settingsNav">
+      <button data-target="sec-account" class="active"><span class="s-nav-icon">👤</span>Account</button>
+      <button data-target="sec-profile"><span class="s-nav-icon">🪪</span>Profile</button>
+      <button data-target="sec-appearance"><span class="s-nav-icon">🎨</span>Appearance</button>
+      <button data-target="sec-notifications"><span class="s-nav-icon">🔔</span>Notifications</button>
+      <button data-target="sec-privacy"><span class="s-nav-icon">🔒</span>Privacy</button>
+      <button data-target="sec-interview"><span class="s-nav-icon">🎤</span>Interview</button>
+      <button data-target="sec-ai"><span class="s-nav-icon">🤖</span>AI Preferences</button>
+      <button data-target="sec-data"><span class="s-nav-icon">🗄</span>Data</button>
+    </nav>
+
+    <form id="settingsForm" class="settings-sections" novalidate>
+
+      <!-- ═══════════ ACCOUNT SETTINGS ═══════════ -->
+      <section class="card s-section" id="sec-account">
+        <div class="s-section-title"><span class="s-icon">👤</span>Account Settings</div>
+        <div class="s-section-sub">Your A.I.R.C. Pro account, on this device.</div>
+
+        <div class="s-account-row">
+          <div class="s-account-avatar" id="sAccountAvatar"></div>
+          <div>
+            <div class="s-account-name" id="sAccountName">—</div>
+            <div class="s-account-meta" id="sAccountMeta">—</div>
+          </div>
+        </div>
+        <div class="s-account-row" style="margin-top:14px">
+          <span class="plan-badge" id="sAccountPlanBadge">◆ FREE</span>
+          <a href="pricing.html" class="btn sm accent">Manage Plan</a>
+          <button type="button" class="btn sm danger" id="sResetAccountBtn">Reset Account</button>
+        </div>
+      </section>
+
+      <!-- ═══════════ PROFILE SETTINGS ═══════════ -->
+      <section class="card s-section" id="sec-profile">
+        <div class="s-section-title"><span class="s-icon">🪪</span>Profile Settings</div>
+        <div class="s-section-sub">Your public interview profile — name, photo, skills and bio.</div>
+
+        <div class="s-account-row">
+          <div class="s-account-avatar" id="sProfileAvatar"></div>
+          <div>
+            <div class="s-account-name" id="sProfileName">—</div>
+            <div class="s-account-meta" id="sProfileMeta">—</div>
+          </div>
+          <a href="profile.html" class="btn sm accent" style="margin-left:auto">Edit Full Profile ▸</a>
+        </div>
+      </section>
+
+      <!-- ═══════════ APPEARANCE ═══════════ -->
+      <section class="card s-section" id="sec-appearance">
+        <div class="s-section-title"><span class="s-icon">🎨</span>Appearance</div>
+        <div class="s-section-sub">Choose how A.I.R.C. Pro looks. Applies instantly and is saved permanently on this device.</div>
+
+        <div class="s-theme-grid" id="sThemeGrid">
+          <label class="s-theme-card" data-theme-option="dark">
+            <input type="radio" name="theme" value="dark" />
+            <div class="s-theme-swatch dark"></div>
+            <span>🌙 Dark Mode</span>
+          </label>
+          <label class="s-theme-card" data-theme-option="light">
+            <input type="radio" name="theme" value="light" />
+            <div class="s-theme-swatch light"></div>
+            <span>☀️ Light Mode</span>
+          </label>
+          <label class="s-theme-card" data-theme-option="auto">
+            <input type="radio" name="theme" value="auto" />
+            <div class="s-theme-swatch auto"></div>
+            <span>🖥 Auto / System</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- ═══════════ NOTIFICATIONS ═══════════ -->
+      <section class="card s-section" id="sec-notifications">
+        <div class="s-section-title"><span class="s-icon">🔔</span>Notifications</div>
+        <div class="s-section-sub">Control what A.I.R.C. Pro reminds you about.</div>
+
+        <div class="s-row">
+          <div><div class="s-row-label">Enable Notifications</div><div class="s-row-desc">Master switch for all notifications below.</div></div>
+          <label class="s-toggle s-row-control"><input type="checkbox" id="notifEnabled" /><span class="s-toggle-track"></span></label>
+        </div>
+        <div class="s-row">
+          <div><div class="s-row-label">Interview Reminders</div><div class="s-row-desc">Nudge before a scheduled or resumed session.</div></div>
+          <label class="s-toggle s-row-control"><input type="checkbox" id="notifInterview" /><span class="s-toggle-track"></span></label>
+        </div>
+        <div class="s-row">
+          <div><div class="s-row-label">Daily Practice Reminder</div><div class="s-row-desc">A gentle nudge to keep your streak going.</div></div>
+          <label class="s-toggle s-row-control"><input type="checkbox" id="notifDaily" /><span class="s-toggle-track"></span></label>
+        </div>
+        <div class="s-row">
+          <div><div class="s-row-label">Email Notifications</div><div class="s-row-desc">UI preference only — no backend email is sent.</div></div>
+          <label class="s-toggle s-row-control"><input type="checkbox" id="notifEmail" /><span class="s-toggle-track"></span></label>
+        </div>
+      </section>
+
+      <!-- ═══════════ PRIVACY ═══════════ -->
+      <section class="card s-section" id="sec-privacy">
+        <div class="s-section-title"><span class="s-icon">🔒</span>Privacy</div>
+        <div class="s-section-sub">Control your profile visibility and manage stored data.</div>
+
+        <div class="s-row" style="border-top:none;padding-top:4px">
+          <div><div class="s-row-label">Profile Visibility</div><div class="s-row-desc">Hide your avatar/summary card from the app UI.</div></div>
+          <div class="s-pill-group s-row-control">
+            <span class="s-pill">
+              <input type="radio" name="profileVisibility" value="public" id="visPublic" />
+              <label for="visPublic">👁 Show publicly</label>
+            </span>
+            <span class="s-pill">
+              <input type="radio" name="profileVisibility" value="private" id="visPrivate" />
+              <label for="visPrivate">🙈 Hide profile</label>
+            </span>
+          </div>
+        </div>
+
+        <div class="s-danger-list" style="margin-top:16px">
+          <div class="s-danger-item">
+            <div><div class="s-row-label">Clear Saved Interview History</div><div class="s-row-desc">Deletes all sessions from History, Analytics &amp; Dashboard.</div></div>
+            <button type="button" class="btn sm danger" id="sClearHistoryBtn">Clear History</button>
+          </div>
+          <div class="s-danger-item">
+            <div><div class="s-row-label">Clear Local Storage</div><div class="s-row-desc">Clears cached preferences &amp; chat assistant history. Keeps you logged in.</div></div>
+            <button type="button" class="btn sm danger" id="sClearStorageBtn">Clear Storage</button>
+          </div>
+          <div class="s-danger-item critical">
+            <div><div class="s-row-label">Reset All Settings</div><div class="s-row-desc">Restores every setting on this page to its default value.</div></div>
+            <button type="button" class="btn sm danger" id="sResetAllBtn">Reset Settings</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ INTERVIEW PREFERENCES ═══════════ -->
+      <section class="card s-section" id="sec-interview">
+        <div class="s-section-title"><span class="s-icon">🎤</span>Interview Preferences</div>
+        <div class="s-section-sub">Defaults applied the next time you start an interview.</div>
+
+        <div class="s-grid">
+          <div class="p-field">
+            <label>Preferred Interview Language</label>
+            <select id="prefLanguage">
+              <option value="en-IN">English (India)</option>
+              <option value="en-US">English (US)</option>
+              <option value="en-GB">English (UK)</option>
+              <option value="hi-IN">Hindi</option>
+            </select>
+          </div>
+          <div class="p-field">
+            <label>Difficulty Level</label>
+            <select id="prefDifficulty">
+              <option value="beginner">Beginner</option>
+              <option value="mid">Intermediate</option>
+              <option value="senior">Advanced</option>
+            </select>
+          </div>
+          <div class="p-field">
+            <label>Interview Duration</label>
+            <select id="prefDuration">
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60">60 minutes</option>
+            </select>
+          </div>
+          <div class="p-field">
+            <label>&nbsp;</label>
+            <div class="s-row" style="border-top:none;padding:9px 0 0">
+              <div class="s-row-label">Default Camera</div>
+              <label class="s-toggle s-row-control"><input type="checkbox" id="prefCamera" /><span class="s-toggle-track"></span></label>
+            </div>
+          </div>
+          <div class="p-field">
+            <label>&nbsp;</label>
+            <div class="s-row" style="border-top:none;padding:9px 0 0">
+              <div class="s-row-label">Default Microphone</div>
+              <label class="s-toggle s-row-control"><input type="checkbox" id="prefMic" /><span class="s-toggle-track"></span></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ AI PREFERENCES ═══════════ -->
+      <section class="card s-section" id="sec-ai">
+        <div class="s-section-title"><span class="s-icon">🤖</span>AI Preferences</div>
+        <div class="s-section-sub">Control what the AI evaluates during your interviews.</div>
+
+        <div class="s-row">
+          <div><div class="s-row-label">AI Feedback</div><div class="s-row-desc">Generate strengths, weaknesses &amp; suggestions after each session.</div></div>
+          <label class="s-toggle s-row-control"><input type="checkbox" id="aiFeedback" /><span class="s-toggle-track"></span></label>
+        </div>
+        <div class="s-row">
+          <div><div class="s-row-label">Auto Follow-Up Questions</div><div class="s-row-desc">Let the AI probe deeper based on your answers.</div></div>
+          <label class="s-toggle s-row-control"><input type="checkbox" id="aiFollowUps" /><span class="s-toggle-track"></span></label>
+        </div>
+        <div class="s-row">
+          <div><div class="s-row-label">Confidence Analysis</div><div class="s-row-desc">Score confidence from tone &amp; delivery.</div></div>
+          <label class="s-toggle s-row-control"><input type="checkbox" id="aiConfidence" /><span class="s-toggle-track"></span></label>
+        </div>
+        <div class="s-row">
+          <div><div class="s-row-label">Voice Analysis</div><div class="s-row-desc">Track WPM, filler words &amp; speech pacing.</div></div>
+          <label class="s-toggle s-row-control"><input type="checkbox" id="aiVoice" /><span class="s-toggle-track"></span></label>
+        </div>
+        <div class="s-row">
+          <div><div class="s-row-label">Face Analysis</div><div class="s-row-desc">Track eye contact &amp; engagement via webcam.</div></div>
+          <label class="s-toggle s-row-control"><input type="checkbox" id="aiFace" /><span class="s-toggle-track"></span></label>
+        </div>
+      </section>
+
+      <!-- ═══════════ DATA MANAGEMENT ═══════════ -->
+      <section class="card s-section" id="sec-data">
+        <div class="s-section-title"><span class="s-icon">🗄</span>Data Management</div>
+        <div class="s-section-sub">Export or remove the data A.I.R.C. Pro stores on this device.</div>
+
+        <div class="s-danger-list">
+          <div class="s-danger-item">
+            <div><div class="s-row-label">Total Sessions Stored</div><div class="s-row-desc" id="sDataSessionCount">Loading…</div></div>
+            <a href="index.html#tab-history" class="btn sm">View History</a>
+          </div>
+          <div class="s-danger-item">
+            <div><div class="s-row-label">Export Settings (JSON)</div><div class="s-row-desc">Download your current settings as a file.</div></div>
+            <button type="button" class="btn sm" id="sExportSettingsBtn">Export</button>
+          </div>
+        </div>
+      </section>
+
+    </form>
+  </div>
+
+  <!-- STICKY SAVE / RESET BAR -->
+  <div class="settings-actionbar">
+    <span class="s-unsaved" id="sUnsavedHint">You have unsaved changes</span>
+    <button type="button" class="btn" id="sResetBtn">Reset Settings</button>
+    <button type="button" class="btn primary" id="sSaveBtn">💾 Save Settings</button>
+  </div>
+
+</div>
+
+<!-- CONFIRM DIALOG (shared) -->
+<div class="s-confirm-backdrop" id="sConfirmBackdrop" style="display:none">
+  <div class="s-confirm-box">
+    <h3 id="sConfirmTitle">Are you sure?</h3>
+    <p id="sConfirmMsg">This action cannot be undone.</p>
+    <div class="s-confirm-actions">
+      <button type="button" class="btn sm" id="sConfirmCancel">Cancel</button>
+      <button type="button" class="btn sm danger" id="sConfirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,175 @@
+/* ═══════════════════════════════════════════════════════════════
+   profile.css
+   Styles for the User Profile System:
+     • Full Profile page (profile.html)
+     • Dashboard "Profile Summary" card (injected into index.html)
+     • Topbar profile nav avatar (injected into index.html)
+   Reuses the existing theme variables (--bg, --accent, --font-head…)
+   defined in index.css / theme-pro.css. All rules are scoped to
+   dedicated classes/IDs so nothing here touches existing selectors.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Topbar profile nav link (index.html) ── */
+.profile-nav-link {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid var(--border, rgba(0,220,180,.2));
+  overflow: hidden; text-decoration: none; flex: 0 0 auto;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.profile-nav-link:hover { transform: translateY(-1px); border-color: var(--accent); box-shadow: 0 0 12px rgba(0,221,180,.25); }
+.profile-nav-link svg, .profile-nav-link img { width: 100%; height: 100%; display: block; object-fit: cover; }
+
+/* ── Shared: avatar wrapper used on the page + dashboard card ── */
+.p-avatar-circle { border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; background: var(--surface2); }
+.p-avatar-circle svg, .p-avatar-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── Profile page shell ── */
+.profile-app { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 20px 20px 60px; }
+
+.profile-topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 14px 4px 22px; flex-wrap: wrap;
+}
+.profile-back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text2); text-decoration: none; font-family: var(--font-mono);
+  transition: color .15s ease;
+}
+.profile-back-link:hover { color: var(--accent); }
+
+/* ── Hero card ── */
+.p-hero {
+  display: flex; align-items: center; gap: 22px; flex-wrap: wrap;
+  padding: 26px !important;
+}
+.p-hero-avatar-wrap { position: relative; flex: 0 0 auto; }
+.p-hero .p-avatar-circle { width: 96px; height: 96px; border: 2px solid var(--glass-border, rgba(255,255,255,.1)); }
+.p-avatar-edit-btn {
+  position: absolute; bottom: -2px; right: -2px; width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2)); border: 2px solid var(--bg, #080c12);
+  color: #04121c; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  font-size: 13px; transition: transform .15s ease;
+}
+.p-avatar-edit-btn:hover { transform: scale(1.08); }
+
+.p-hero-info { flex: 1; min-width: 200px; }
+.p-hero-name { font-family: var(--font-head); font-size: 22px; font-weight: 800; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.p-hero-email { font-size: 12px; color: var(--text2); margin-bottom: 10px; }
+.p-level-chip {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; letter-spacing: .5px;
+  padding: 4px 10px; border-radius: 20px; font-family: var(--font-mono); text-transform: uppercase;
+  border: 1px solid var(--border); color: var(--text2);
+}
+.p-level-chip.beginner     { color: var(--warn, #ffa502); border-color: rgba(255,165,2,.35); }
+.p-level-chip.intermediate { color: var(--accent2); border-color: rgba(0,170,255,.35); }
+.p-level-chip.advanced     { color: var(--accent); border-color: rgba(0,221,180,.4); box-shadow: 0 0 12px rgba(0,221,180,.15); }
+
+.p-completion-wrap { flex: 0 0 auto; min-width: 160px; text-align: right; }
+.p-completion-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.p-completion-pct { font-family: var(--font-head); font-size: 22px; font-weight: 800; color: var(--accent); }
+.p-progress-track { width: 160px; height: 6px; border-radius: 4px; background: var(--surface2); overflow: hidden; margin-top: 6px; }
+.p-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .5s cubic-bezier(.16,.84,.44,1); }
+
+/* ── Action row ── */
+.p-actions-row { display: flex; gap: 10px; margin: 18px 0; flex-wrap: wrap; }
+
+/* ── Form layout ── */
+.p-section-title {
+  font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; color: var(--accent2); margin-bottom: 14px;
+}
+.p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+.p-grid.p-grid-1 { grid-template-columns: 1fr; }
+@media (max-width: 720px) { .p-grid { grid-template-columns: 1fr; } }
+
+.p-field { display: flex; flex-direction: column; gap: 6px; }
+.p-field label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.p-field .p-hint { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+.p-field .p-error { font-size: 10.5px; color: var(--danger); margin-top: 2px; display: none; }
+.p-field.has-error .p-error { display: block; }
+.p-field.has-error input, .p-field.has-error textarea { border-color: var(--danger) !important; }
+
+.p-input, .p-textarea {
+  width: 100%; padding: 9px 11px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text); font-family: var(--font-mono); font-size: 12.5px;
+  outline: none; transition: border-color .18s ease, opacity .18s ease;
+}
+.p-input:focus, .p-textarea:focus { border-color: var(--accent); }
+.p-textarea { resize: vertical; min-height: 78px; line-height: 1.6; }
+.p-input:disabled, .p-textarea:disabled { opacity: .55; cursor: not-allowed; }
+.p-input::placeholder, .p-textarea::placeholder { color: var(--muted); }
+
+.p-char-count { text-align: right; font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* ── Skills tag input ── */
+.p-skills-box {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2);
+  min-height: 42px; transition: border-color .18s ease;
+}
+.p-skills-box:focus-within { border-color: var(--accent); }
+.p-skill-chip {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11px;
+  padding: 4px 8px 4px 10px; border-radius: 14px;
+  background: rgba(0,221,180,.1); border: 1px solid rgba(0,221,180,.3); color: var(--accent);
+  animation: p-chip-in .18s ease both;
+}
+.p-skill-chip button {
+  background: none; border: none; color: var(--accent); cursor: pointer; font-size: 12px;
+  line-height: 1; padding: 0; opacity: .75;
+}
+.p-skill-chip button:hover { opacity: 1; }
+.p-skills-input {
+  flex: 1; min-width: 90px; background: transparent; border: none; outline: none;
+  color: var(--text); font-family: var(--font-mono); font-size: 12px; padding: 4px;
+}
+.p-skills-input:disabled { opacity: .5; }
+@keyframes p-chip-in { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
+
+/* ── Messages ── */
+.p-msg-banner {
+  display: none; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px;
+  font-size: 12px; margin-bottom: 16px; animation: p-fade-in .25s ease both;
+}
+.p-msg-banner.show { display: flex; }
+.p-msg-banner.ok  { background: rgba(0,221,180,.08); border: 1px solid rgba(0,221,180,.3); color: var(--accent); }
+.p-msg-banner.err { background: rgba(255,71,87,.08); border: 1px solid rgba(255,71,87,.3); color: #ff6b7a; }
+@keyframes p-fade-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Dashboard "Profile Summary" card ── */
+.dash-profile-card { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.dash-profile-card .p-avatar-circle { width: 64px; height: 64px; border: 2px solid var(--glass-border, rgba(255,255,255,.1)); }
+.dash-profile-info { flex: 1; min-width: 160px; }
+.dash-profile-name { font-family: var(--font-head); font-weight: 800; font-size: 16px; margin-bottom: 3px; }
+.dash-profile-meta { font-size: 11px; color: var(--text2); margin-bottom: 8px; }
+.dash-profile-skills { display: flex; flex-wrap: wrap; gap: 5px; }
+.dash-skill-pill {
+  font-size: 10px; padding: 3px 9px; border-radius: 12px;
+  background: rgba(0,170,255,.1); border: 1px solid rgba(0,170,255,.28); color: var(--accent2);
+}
+.dash-profile-side { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+/* ── Animations for the whole page ── */
+.profile-app .card { animation: p-card-in .4s cubic-bezier(.16,.84,.44,1) both; }
+@keyframes p-card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Settings > Privacy "Hide profile" toggle ──
+   Purely additive: only takes effect when js/settingsStore.js sets
+   data-profile-hidden="true" on <body> (Privacy setting). Hides the
+   topbar avatar link + Dashboard summary card; does not remove them
+   or touch profileSummary.js/profile.js in any way. ── */
+body[data-profile-hidden="true"] .profile-nav-link,
+body[data-profile-hidden="true"] .dash-profile-card {
+  display: none !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .p-hero { flex-direction: column; align-items: flex-start; }
+  .p-completion-wrap { text-align: left; align-self: stretch; }
+  .p-progress-track { width: 100%; }
+  .p-actions-row { width: 100%; }
+  .p-actions-row .btn { flex: 1; }
+}

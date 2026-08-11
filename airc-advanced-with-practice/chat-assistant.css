@@ -1,0 +1,250 @@
+/* ═══════════════════════════════════════════════════════════════
+   chat-assistant.css
+   Standalone stylesheet for the AI Mentor Chat Assistant widget.
+   Loaded AFTER index.css + theme-pro.css. Uses the same CSS
+   variables (--bg, --surface, --accent, --font-head, --font-mono …)
+   so it automatically matches the current theme. Does NOT modify
+   or override any existing selectors from index.css / theme-pro.css
+   (all rules below are scoped under #airc-chat-root).
+═══════════════════════════════════════════════════════════════ */
+
+#airc-chat-root, #airc-chat-root * { box-sizing: border-box; }
+
+#airc-chat-root {
+  font-family: var(--font-mono);
+  color: var(--text);
+}
+
+/* Nudge the existing toast stack up so it never collides with the launcher */
+#toastContainer { bottom: 96px !important; }
+
+/* ── Floating Launcher Button ── */
+.airc-chat-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border, rgba(255,255,255,.08));
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 8px 26px rgba(0,0,0,.4), 0 0 0 rgba(0,221,180,0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform .22s var(--ease, ease), box-shadow .22s var(--ease, ease);
+  animation: airc-launcher-pulse 3.4s ease-in-out infinite;
+}
+.airc-chat-launcher:hover { transform: translateY(-2px) scale(1.05); }
+.airc-chat-launcher:active { transform: translateY(0) scale(.97); }
+.airc-chat-launcher svg { width: 26px; height: 26px; }
+.airc-chat-launcher .airc-icon-close { display: none; }
+.airc-chat-launcher.open .airc-icon-chat { display: none; }
+.airc-chat-launcher.open .airc-icon-close { display: block; }
+
+.airc-chat-launcher .airc-launcher-dot {
+  position: absolute; top: 2px; right: 2px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--danger, #ff4757);
+  border: 2px solid var(--bg, #080c12);
+  display: none;
+}
+.airc-chat-launcher.has-unread .airc-launcher-dot { display: block; }
+
+@keyframes airc-launcher-pulse {
+  0%, 100% { box-shadow: 0 8px 26px rgba(0,0,0,.4), 0 0 0 rgba(0,221,180,.25); }
+  50%      { box-shadow: 0 8px 26px rgba(0,0,0,.4), 0 0 22px rgba(0,221,180,.35); }
+}
+
+/* ── Chat Panel ── */
+.airc-chat-panel {
+  position: fixed;
+  right: 24px;
+  bottom: 94px;
+  width: 372px;
+  max-width: calc(100vw - 32px);
+  height: 540px;
+  max-height: calc(100vh - 130px);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)), var(--glass-bg, rgba(17,25,38,.85));
+  backdrop-filter: blur(var(--glass-blur, 14px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 14px));
+  border: 1px solid var(--glass-border, rgba(255,255,255,.08));
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(16px) scale(.97);
+  pointer-events: none;
+  transition: opacity .22s var(--ease, ease), transform .22s var(--ease, ease);
+}
+.airc-chat-panel.airc-open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.airc-chat-panel.airc-minimized { height: 58px; }
+.airc-chat-panel.airc-minimized .airc-chat-body,
+.airc-chat-panel.airc-minimized .airc-chat-footer,
+.airc-chat-panel.airc-minimized .airc-chat-suggestions { display: none; }
+
+/* ── Header ── */
+.airc-chat-header {
+  flex: 0 0 auto;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--glass-border, rgba(255,255,255,.08));
+  background: rgba(255,255,255,.02);
+  cursor: pointer;
+}
+.airc-chat-avatar {
+  width: 34px; height: 34px; border-radius: 50%; flex: 0 0 auto;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-head); font-weight: 800; font-size: 15px; color: #04121c;
+}
+.airc-chat-title-wrap { flex: 1; min-width: 0; }
+.airc-chat-title { font-family: var(--font-head); font-weight: 700; font-size: 13.5px; letter-spacing: .3px; }
+.airc-chat-status { font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 5px; margin-top: 1px; }
+.airc-chat-status .airc-dot-live {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 6px var(--accent); flex: 0 0 auto;
+}
+.airc-chat-header-actions { display: flex; gap: 4px; flex: 0 0 auto; }
+.airc-chat-header-actions button {
+  width: 26px; height: 26px; border-radius: 7px; border: 1px solid transparent;
+  background: transparent; color: var(--text2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s ease; font-size: 13px;
+}
+.airc-chat-header-actions button:hover { background: rgba(255,255,255,.06); color: var(--text); border-color: var(--glass-border, rgba(255,255,255,.1)); }
+
+/* ── Body / Messages ── */
+.airc-chat-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
+}
+.airc-chat-body::-webkit-scrollbar { width: 6px; }
+.airc-chat-body::-webkit-scrollbar-thumb { background: var(--glass-border, rgba(255,255,255,.12)); border-radius: 6px; }
+
+.airc-msg { display: flex; gap: 8px; max-width: 92%; animation: airc-fade-up .25s ease both; }
+.airc-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+.airc-msg.bot { align-self: flex-start; }
+
+.airc-msg-avatar {
+  width: 22px; height: 22px; border-radius: 50%; flex: 0 0 auto; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; font-family: var(--font-head);
+}
+.airc-msg.bot .airc-msg-avatar { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #04121c; }
+.airc-msg.user .airc-msg-avatar { background: var(--surface2); color: var(--text2); border: 1px solid var(--glass-border, rgba(255,255,255,.1)); }
+
+.airc-bubble {
+  padding: 9px 12px;
+  border-radius: 13px;
+  font-size: 12.5px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.airc-msg.bot .airc-bubble {
+  background: var(--surface2, #111926);
+  border: 1px solid var(--glass-border, rgba(255,255,255,.06));
+  border-top-left-radius: 4px;
+  color: var(--text);
+}
+.airc-msg.user .airc-bubble {
+  background: linear-gradient(135deg, rgba(0,221,180,.22), rgba(0,170,255,.16));
+  border: 1px solid rgba(0,221,180,.3);
+  border-top-right-radius: 4px;
+  color: var(--text);
+}
+.airc-bubble b, .airc-bubble strong { color: var(--accent); }
+.airc-bubble code {
+  background: rgba(0,0,0,.35); padding: 1px 5px; border-radius: 4px;
+  font-size: 11.5px; color: var(--accent2);
+}
+
+/* ── Typing indicator ── */
+.airc-msg.bot.airc-typing .airc-bubble { display: flex; align-items: center; gap: 4px; padding: 12px 14px; }
+.airc-typing-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--text2);
+  animation: airc-typing-bounce 1.1s infinite ease-in-out;
+}
+.airc-typing-dot:nth-child(2) { animation-delay: .15s; }
+.airc-typing-dot:nth-child(3) { animation-delay: .3s; }
+@keyframes airc-typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: .5; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+@keyframes airc-fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Quick suggestion chips ── */
+.airc-chat-suggestions {
+  flex: 0 0 auto;
+  display: flex; gap: 6px; overflow-x: auto;
+  padding: 8px 12px; border-top: 1px solid var(--glass-border, rgba(255,255,255,.06));
+}
+.airc-chat-suggestions::-webkit-scrollbar { height: 0; }
+.airc-chip {
+  flex: 0 0 auto;
+  font-size: 10.5px; letter-spacing: .3px; white-space: nowrap;
+  padding: 6px 11px; border-radius: 20px;
+  border: 1px solid var(--glass-border, rgba(255,255,255,.1));
+  background: rgba(255,255,255,.03); color: var(--text2);
+  cursor: pointer; transition: all .15s ease; font-family: var(--font-mono);
+}
+.airc-chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,221,180,.08); }
+
+/* ── Footer / Input ── */
+.airc-chat-footer {
+  flex: 0 0 auto;
+  display: flex; align-items: flex-end; gap: 8px;
+  padding: 10px 12px 12px;
+  border-top: 1px solid var(--glass-border, rgba(255,255,255,.06));
+}
+.airc-chat-input {
+  flex: 1; resize: none; max-height: 90px; min-height: 36px;
+  background: var(--surface2, #111926);
+  border: 1px solid var(--glass-border, rgba(255,255,255,.1));
+  border-radius: 10px; padding: 9px 11px;
+  color: var(--text); font-family: var(--font-mono); font-size: 12.5px;
+  outline: none; transition: border-color .15s ease;
+  line-height: 1.4;
+}
+.airc-chat-input:focus { border-color: var(--accent); }
+.airc-chat-input::placeholder { color: var(--muted); }
+
+.airc-send-btn {
+  flex: 0 0 auto; width: 36px; height: 36px; border-radius: 10px; border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #04121c; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: filter .15s ease, transform .15s ease;
+}
+.airc-send-btn:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
+.airc-send-btn:disabled { opacity: .4; cursor: default; }
+.airc-send-btn svg { width: 16px; height: 16px; }
+
+/* ── Mobile responsiveness ── */
+@media (max-width: 520px) {
+  .airc-chat-panel {
+    right: 10px; left: 10px; bottom: 84px;
+    width: auto; max-width: none;
+    height: calc(100vh - 120px);
+  }
+  .airc-chat-launcher { right: 16px; bottom: 16px; }
+  #toastContainer { bottom: 86px !important; }
+}
+@media (max-width: 360px) {
+  .airc-chat-panel { height: calc(100vh - 104px); bottom: 78px; }
+}

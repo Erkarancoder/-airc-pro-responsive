@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>A.I.R.C. Pro — AI Interview Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="theme-pro.css" />
+  <link rel="stylesheet" href="theme-light.css" />
+  <link rel="stylesheet" href="chat-assistant.css" />
+  <link rel="stylesheet" href="profile.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+  <script src="auth.js"></script>
+  <script src="js/settingsStore.js"></script>
+  <script defer src="js/plan.js"></script>
+  <script>
+    /* ── Auth guard: redirect to login if not authenticated ── */
+    (function() {
+      if (!window.AIRC_AUTH || !window.AIRC_AUTH.isLoggedIn()) {
+        window.location.href = 'auth.html';
+      }
+    })();
+  </script>
+  <script defer src="db.js"></script>
+  <script defer src="js/questionBank.js"></script>
+  <script defer src="js/companyBank.js"></script>
+  <script defer src="js/followUpEngine.js"></script>
+  <script defer src="js/introEvaluation.js"></script>
+  <script defer src="js/answerEvaluation.js"></script>
+  <script defer src="js/voiceAnalysis.js"></script>
+  <script defer src="js/faceAnalysis.js"></script>
+  <script defer src="js/resume.js"></script>
+  <script defer src="js/coding.js"></script>
+  <script defer src="js/dashboard.js"></script>
+  <script defer src="js/reportPdf.js"></script>
+  <script defer src="index.js"></script>
+  <script defer src="js/profileCore.js"></script>
+  <script defer src="js/profileDb.js"></script>
+  <script defer src="js/profileSummary.js"></script>
+  <script defer src="js/settingsApply.js"></script>
+  <script defer src="js/chatAssistant.js"></script>
+</head>
+<body>
+
+<!-- TOAST CONTAINER -->
+<div id="toastContainer"></div>
+
+<!-- NOISE OVERLAY -->
+<div class="noise"></div>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">A.I.R.C. <em>Pro</em></span>
+      </div>
+      <div class="status-pill" id="sessionStatus">● IDLE</div>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="interview">Interview</button>
+      <button class="tab" data-tab="history">History</button>
+      <button class="tab" data-tab="analytics">Analytics</button>
+      <button class="tab" data-tab="dashboard">Dashboard</button>
+    </nav>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:12px">
+      <button onclick="location.href='ai-tutor.html'" class="btn sm" title="AI Tutor practice workspace" style="display:flex;align-items:center;gap:6px">🧠 Practice</button>
+      <span class="plan-badge free" id="planBadge">◆ FREE</span>
+      <a href="pricing.html" style="font-size:11px;color:var(--accent2);text-decoration:none;font-family:var(--font-mono)">Upgrade ▸</a>
+      <span class="perm-chip" id="permChip">⬤ No device</span>
+      <span id="userBadgeName" style="font-size:11px;color:var(--muted);font-family:var(--font-mono)"></span>
+      <button onclick="AIRC_AUTH.logout()" style="font-size:10px;letter-spacing:1px;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,71,87,.3);background:transparent;color:#ff6b7a;cursor:pointer;font-family:var(--font-mono);transition:all .2s" onmouseover="this.style.background='rgba(255,71,87,.1)'" onmouseout="this.style.background='transparent'">LOGOUT</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════ TAB: INTERVIEW ═══════════════ -->
+  <div class="tab-panel active" id="tab-interview">
+
+    <!-- WELCOME / INSTRUCTIONS -->
+    <div class="card welcome-card" id="welcomeCard">
+      <h2>◈ Welcome to A.I.R.C. Pro</h2>
+      <p class="welcome-sub">A full mock-interview flow: Introduction → HR → Technical → Coding → Feedback. The AI evaluates your speech, face and answers as you go.</p>
+      <div class="welcome-checklist">
+        <div class="w-item"><b>1.</b> Pick a topic or a company below, and a difficulty.</div>
+        <div class="w-item"><b>2.</b> Allow camera & microphone (or switch to manual typing).</div>
+        <div class="w-item"><b>3.</b> Answer naturally — follow-up questions adapt to what you say.</div>
+        <div class="w-item"><b>4.</b> Finish with a coding round and a full feedback report.</div>
+      </div>
+      <button class="btn primary sm" id="dismissWelcomeBtn">Got it — let's set up ▾</button>
+    </div>
+
+    <!-- ROUND STEPPER -->
+    <div class="round-stepper" id="roundStepper" style="display:none">
+      <div class="round-step" data-round="intro"><span>1</span>Introduction</div>
+      <div class="round-step" data-round="hr"><span>2</span>HR</div>
+      <div class="round-step" data-round="technical"><span>3</span>Technical</div>
+      <div class="round-step" data-round="coding"><span>4</span>Coding</div>
+      <div class="round-step" data-round="feedback"><span>5</span>Feedback</div>
+    </div>
+
+    <div class="interview-grid">
+
+      <!-- LEFT COLUMN -->
+      <section class="col-left">
+
+        <!-- VIDEO CARD -->
+        <div class="card video-card">
+          <div class="video-wrap">
+            <video id="video" autoplay muted playsinline></video>
+            <canvas id="overlay"></canvas>
+            <!-- Waveform bars -->
+            <div class="waveform" id="waveform">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <!-- Timer badge -->
+            <div class="timer-badge" id="timerBadge">00:00</div>
+            <!-- No-cam placeholder -->
+            <div class="no-cam" id="noCam">
+              <div class="cam-icon">⬡</div>
+              <p>No camera feed</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETUP ROW -->
+        <div class="card setup-card" id="setupCard">
+          <div class="setup-row">
+            <div class="field">
+              <label>Job Role / Topic</label>
+              <select id="categorySelect">
+                <option value="general">General / Behavioural</option>
+                <option value="hr">HR Interview</option>
+                <option value="frontend">Frontend Developer</option>
+                <option value="backend">Backend Developer</option>
+                <option value="fullstack">Full Stack Developer</option>
+                <option value="mern">MERN Stack</option>
+                <option value="react">React.js</option>
+                <option value="javascript">JavaScript</option>
+                <option value="java">Java</option>
+                <option value="dsa">DSA</option>
+                <option value="sql">SQL</option>
+                <option value="dbms">DBMS</option>
+                <option value="os">Operating System</option>
+                <option value="cn">Computer Networks</option>
+                <option value="oop">OOP</option>
+                <option value="system-design">System Design</option>
+                <option value="data">Data Science / ML</option>
+                <option value="devops">DevOps / Cloud</option>
+                <option value="product">Product Manager</option>
+                <option value="design">UI/UX Designer</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Company Mode (optional) <span class="tier-chip">PRO</span></label>
+              <select id="companySelect">
+                <option value="">— Topic-based (above) —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Difficulty</label>
+              <select id="difficultySelect">
+                <option value="beginner">Beginner</option>
+                <option value="mid">Intermediate</option>
+                <option value="senior">Advanced</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Input Mode</label>
+              <select id="modeSelect">
+                <option value="voice">Voice (mic)</option>
+                <option value="manual">Manual (type)</option>
+              </select>
+            </div>
+          </div>
+          <div class="setup-row">
+            <div class="field" style="flex:1 1 100%">
+              <label>Resume (optional) — generates a tailored round from your skills & projects <span class="tier-chip">PRO</span></label>
+              <input type="file" id="resumeInput" accept=".txt,.pdf" />
+              <span class="hint-chip" id="resumeStatus" style="display:none;margin-top:6px"></span>
+            </div>
+          </div>
+          <div class="controls">
+            <button id="startBtn" class="btn primary">▶ Start Interview</button>
+            <button id="nextBtn" class="btn" disabled>Next →</button>
+            <button id="stopBtn" class="btn danger" disabled>■ Stop</button>
+            <button id="reportBtn" class="btn accent" disabled>⬇ Export HTML</button>
+            <button id="reportPdfBtn" class="btn accent" disabled>⬇ Export PDF <span class="tier-chip">PRO</span></button>
+          </div>
+        </div>
+
+        <!-- INTRO RESULT BANNER -->
+        <div class="card intro-banner" id="introBanner" style="display:none"></div>
+
+        <!-- PERMISSION BANNER -->
+        <div id="permBanner" class="card perm-banner" style="display:none">
+          <div class="banner-title" id="bannerTitle">⚠ Permissions Required</div>
+          <p id="bannerMessage">Camera & microphone access is needed.</p>
+          <div class="banner-actions">
+            <button id="retryPermBtn" class="btn">Retry</button>
+            <button id="useManualBtn" class="btn">Switch to Manual</button>
+          </div>
+        </div>
+
+        <!-- QUESTION CARD -->
+        <div class="card question-card" id="questionCard" style="display:none">
+          <div class="q-header">
+            <div class="q-badge" id="qBadge">Q 1 / 10</div>
+            <div class="q-progress-wrap"><div class="q-progress-bar" id="qProgressBar"></div></div>
+            <div class="q-timer" id="qTimer">2:00</div>
+          </div>
+          <p class="q-text" id="questionText">—</p>
+          <div class="hint-chip" id="hintChip" style="display:none"></div>
+          <div style="display:flex;gap:8px;margin:8px 0 2px;flex-wrap:wrap">
+            <button id="prevQBtn" class="btn sm" type="button">← Previous</button>
+            <button id="skipQBtn" class="btn sm" type="button">Skip →</button>
+          </div>
+          <div class="answer-label">Your answer</div>
+          <div id="currentAnswer" class="current-answer">Start speaking or type below…</div>
+          <!-- Manual input -->
+          <div id="manualControls" style="display:none;margin-top:10px">
+            <textarea id="manualInput" placeholder="Type your answer here…" rows="3"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="manualSubmitBtn" class="btn primary">Submit</button>
+              <button id="manualNextBtn" class="btn">Next Q</button>
+            </div>
+          </div>
+          <!-- LEARNING MODE / PER-ANSWER FEEDBACK -->
+          <div id="answerFeedback" class="answer-feedback" style="display:none"></div>
+        </div>
+
+        <!-- CODING ROUND CARD -->
+        <div class="card coding-card" id="codingCard" style="display:none">
+          <div class="q-header">
+            <div class="q-badge" id="codeBadge">Problem 1 / 2</div>
+            <div class="q-progress-wrap"><div class="q-progress-bar" id="codeProgressBar"></div></div>
+            <div class="q-timer" id="codeTimer">5:00</div>
+          </div>
+          <h3 id="codeTitle" style="font-family:var(--font-head)">— <span class="tier-chip premium">PREMIUM</span></h3>
+          <p class="q-text" id="codePrompt" style="font-size:13px"></p>
+          <textarea id="codeEditor" class="code-editor" spellcheck="false" rows="12"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <button id="runCodeBtn" class="btn primary sm">▶ Run Tests</button>
+            <button id="nextCodeBtn" class="btn sm">Next Problem →</button>
+          </div>
+          <div id="codeResults" class="code-results"></div>
+        </div>
+
+        <!-- FEEDBACK CARD -->
+        <div class="card feedback-card" id="feedbackCard" style="display:none">
+          <h2 style="font-family:var(--font-head)">◈ Final Feedback Report</h2>
+          <div class="feedback-grid" id="feedbackGrid"></div>
+          <div class="feedback-cols">
+            <div>
+              <h3>Strengths</h3>
+              <ul id="strengthsList" class="feedback-list"></ul>
+            </div>
+            <div>
+              <h3>Weaknesses</h3>
+              <ul id="weaknessesList" class="feedback-list"></ul>
+            </div>
+          </div>
+          <h3>Suggestions</h3>
+          <ul id="suggestionsList" class="feedback-list"></ul>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN: LIVE METRICS -->
+      <aside class="col-right">
+
+        <div class="card metric-card">
+          <div class="metric-label">Eye Contact</div>
+          <div class="metric-value" id="eyeContact">—</div>
+          <div class="metric-bar-wrap"><div class="metric-bar" id="eyeBar"></div></div>
+        </div>
+
+        <div class="card metric-card">
+          <div class="metric-label">Filler Words</div>
+          <div class="metric-value" id="fillers">—</div>
+          <div class="metric-sub" id="fillersList"></div>
+        </div>
+
+        <div class="card metric-card">
+          <div class="metric-label">Words / Min</div>
+          <div class="metric-value" id="wpm">—</div>
+          <div class="metric-sub">Ideal: 120–160 WPM</div>
+        </div>
+
+        <div class="card metric-card">
+          <div class="metric-label">Confidence Score</div>
+          <div class="score-ring-wrap">
+            <svg class="score-ring" viewBox="0 0 80 80">
+              <circle class="ring-bg" cx="40" cy="40" r="34"/>
+              <circle class="ring-fill" id="scoreRingFill" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="213.6"/>
+            </svg>
+            <span class="score-label" id="scoreLabel">0</span>
+          </div>
+        </div>
+
+        <div class="card metric-card transcript-card">
+          <div class="metric-label">Live Transcript</div>
+          <div id="liveTranscript" class="transcript-box">No transcript yet…</div>
+        </div>
+
+        <div class="card metric-card">
+          <div class="metric-label">Session Notes</div>
+          <div id="notes" class="notes-box">Ready to begin.</div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TAB: HISTORY ═══════════════ -->
+  <div class="tab-panel" id="tab-history">
+    <div class="history-header">
+      <h2>Session History</h2>
+      <button class="btn danger sm" id="clearHistoryBtn">Clear All</button>
+    </div>
+    <div id="historyList" class="history-list">
+      <div class="empty-state">No sessions recorded yet.<br>Complete an interview to see history.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TAB: DASHBOARD ═══════════════ -->
+  <div class="tab-panel" id="tab-dashboard">
+    <div class="dash-grid">
+      <div class="card dash-hero">
+        <div class="dash-hero-item">
+          <div class="analytics-label">Total Interviews</div>
+          <div class="analytics-big" id="dashTotal">0</div>
+        </div>
+        <div class="dash-hero-item">
+          <div class="analytics-label">Average Score</div>
+          <div class="analytics-big" id="dashAvgScore">—</div>
+        </div>
+        <div class="dash-hero-item">
+          <div class="analytics-label">Daily Streak</div>
+          <div class="analytics-big" id="dashStreak">0<span class="dash-unit">d</span></div>
+        </div>
+        <div class="dash-hero-item">
+          <div class="analytics-label">XP Points</div>
+          <div class="analytics-big" id="dashXP">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="analytics-label" style="margin-bottom:10px">Achievement Badges</div>
+        <div class="badge-grid" id="badgeGrid"><div class="empty-state" style="padding:20px 0">Complete an interview to earn badges.</div></div>
+      </div>
+
+      <div class="card">
+        <div class="analytics-label" style="margin-bottom:10px">Strong Topics</div>
+        <div id="strongTopics" class="topic-list"></div>
+      </div>
+      <div class="card">
+        <div class="analytics-label" style="margin-bottom:10px">Weak Topics</div>
+        <div id="weakTopics" class="topic-list"></div>
+      </div>
+
+      <div class="card span2">
+        <div class="analytics-label" style="margin-bottom:10px">Improvement Suggestions</div>
+        <ul id="dashSuggestions" class="feedback-list"></ul>
+      </div>
+
+      <div class="card">
+        <div class="analytics-label">This Week</div>
+        <div class="dash-period-row"><span id="dashWeekCount">0</span> sessions · avg <span id="dashWeekAvg">—</span></div>
+      </div>
+      <div class="card">
+        <div class="analytics-label">This Month</div>
+        <div class="dash-period-row"><span id="dashMonthCount">0</span> sessions · avg <span id="dashMonthAvg">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TAB: ANALYTICS ═══════════════ -->
+  <div class="tab-panel" id="tab-analytics">
+    <div class="analytics-grid">
+      <div class="card analytics-card">
+        <div class="analytics-label">Total Sessions</div>
+        <div class="analytics-big" id="statTotal">0</div>
+      </div>
+      <div class="card analytics-card">
+        <div class="analytics-label">Avg Score</div>
+        <div class="analytics-big" id="statAvgScore">—</div>
+      </div>
+      <div class="card analytics-card">
+        <div class="analytics-label">Avg WPM</div>
+        <div class="analytics-big" id="statAvgWPM">—</div>
+      </div>
+      <div class="card analytics-card">
+        <div class="analytics-label">Avg Fillers</div>
+        <div class="analytics-big" id="statAvgFillers">—</div>
+      </div>
+      <div class="card analytics-card span2">
+        <div class="analytics-label">Score Trend</div>
+        <canvas id="trendChart" height="120"></canvas>
+      </div>
+      <div class="card analytics-card span2">
+        <div class="analytics-label">WPM Trend</div>
+        <canvas id="wpmChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SESSION DETAIL MODAL -->
+<div id="sessionModal" class="modal-backdrop" style="display:none">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+
+<script>
+  /* Show logged-in username in topbar */
+  window.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('userBadgeName');
+    if (el && window.AIRC_AUTH) {
+      const u = AIRC_AUTH.currentUser();
+      if (u) el.textContent = '◈ ' + u;
+    }
+  });
+</script>
+</body>
+</html>

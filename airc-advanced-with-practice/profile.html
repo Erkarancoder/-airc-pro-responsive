@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Profile — A.I.R.C. Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="theme-pro.css" />
+  <link rel="stylesheet" href="theme-light.css" />
+  <link rel="stylesheet" href="chat-assistant.css" />
+  <link rel="stylesheet" href="profile.css" />
+
+  <script src="auth.js"></script>
+  <script src="js/settingsStore.js"></script>
+  <script>
+    /* Auth guard: redirect to login if not authenticated — same pattern as index.html */
+    (function() {
+      if (!window.AIRC_AUTH || !window.AIRC_AUTH.isLoggedIn()) {
+        window.location.href = 'auth.html';
+      }
+    })();
+  </script>
+  <script defer src="db.js"></script>
+  <script defer src="js/profileCore.js"></script>
+  <script defer src="js/profileDb.js"></script>
+  <script defer src="js/profile.js"></script>
+  <script defer src="js/chatAssistant.js"></script>
+</head>
+<body>
+
+<!-- TOAST CONTAINER (same pattern as index.html) -->
+<div id="toastContainer"></div>
+
+<!-- NOISE OVERLAY -->
+<div class="noise"></div>
+
+<div class="profile-app">
+
+  <div class="profile-topbar">
+    <div class="topbar-left" style="display:flex;align-items:center;gap:14px">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">A.I.R.C. <em>Pro</em></span>
+      </div>
+      <a href="index.html" class="profile-back-link">‹ Back to Interview</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span id="profileUserBadge" style="font-size:11px;color:var(--muted);font-family:var(--font-mono)"></span>
+      <a href="settings.html" title="Settings" style="font-size:16px;color:var(--muted);text-decoration:none;display:flex;align-items:center;transition:color .18s ease">⚙</a>
+      <button onclick="AIRC_AUTH.logout()" style="font-size:10px;letter-spacing:1px;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,71,87,.3);background:transparent;color:#ff6b7a;cursor:pointer;font-family:var(--font-mono);transition:all .2s" onmouseover="this.style.background='rgba(255,71,87,.1)'" onmouseout="this.style.background='transparent'">LOGOUT</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS / ERROR MESSAGE BANNER -->
+  <div class="p-msg-banner" id="pMsgBanner"></div>
+
+  <!-- HERO: avatar, name, level, completion -->
+  <div class="card p-hero">
+    <div class="p-hero-avatar-wrap">
+      <div class="p-avatar-circle" id="pAvatarCircle"></div>
+      <button type="button" class="p-avatar-edit-btn" id="pAvatarEditBtn" title="Change photo">✎</button>
+      <input type="file" id="pAvatarInput" accept="image/*" style="display:none" />
+    </div>
+
+    <div class="p-hero-info">
+      <div class="p-hero-name">
+        <span id="pHeroName">—</span>
+        <span class="p-level-chip" id="pLevelChip">🌱 Beginner</span>
+      </div>
+      <div class="p-hero-email" id="pHeroEmail">—</div>
+      <div class="p-actions-row" style="margin:10px 0 0">
+        <button type="button" class="btn sm" id="pChangePhotoBtn">Change Photo</button>
+        <button type="button" class="btn sm danger" id="pRemovePhotoBtn">Remove Photo</button>
+      </div>
+    </div>
+
+    <div class="p-completion-wrap">
+      <div class="p-completion-label">Profile Completion</div>
+      <div class="p-completion-pct" id="pCompletionPct">0%</div>
+      <div class="p-progress-track"><div class="p-progress-fill" id="pCompletionFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="p-actions-row">
+    <button type="button" class="btn primary" id="pEditBtn">Edit Profile</button>
+    <button type="button" class="btn accent" id="pSaveBtn" style="display:none">Save Profile</button>
+    <button type="button" class="btn" id="pCancelBtn" style="display:none">Cancel</button>
+  </div>
+
+  <form id="pProfileForm" novalidate>
+
+    <!-- PERSONAL INFO -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="p-section-title">Personal Information</div>
+      <div class="p-grid">
+        <div class="p-field" id="fFullName">
+          <label>Full Name *</label>
+          <input class="p-input" type="text" id="inFullName" maxlength="60" disabled placeholder="e.g. Priya Sharma" />
+          <div class="p-error"></div>
+        </div>
+        <div class="p-field" id="fEmail">
+          <label>Email *</label>
+          <input class="p-input" type="email" id="inEmail" maxlength="80" disabled placeholder="you@example.com" />
+          <div class="p-error"></div>
+        </div>
+        <div class="p-field" id="fPhone">
+          <label>Phone Number</label>
+          <input class="p-input" type="tel" id="inPhone" maxlength="20" disabled placeholder="+91 98765 43210" />
+          <div class="p-error"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="p-section-title">Education</div>
+      <div class="p-grid">
+        <div class="p-field" id="fCollege">
+          <label>College / University</label>
+          <input class="p-input" type="text" id="inCollege" maxlength="100" disabled placeholder="e.g. IIT Delhi" />
+          <div class="p-error"></div>
+        </div>
+        <div class="p-field" id="fDegree">
+          <label>Degree</label>
+          <input class="p-input" type="text" id="inDegree" maxlength="60" disabled placeholder="e.g. B.Tech" />
+          <div class="p-error"></div>
+        </div>
+        <div class="p-field" id="fBranch">
+          <label>Branch / Department</label>
+          <input class="p-input" type="text" id="inBranch" maxlength="60" disabled placeholder="e.g. Computer Science" />
+          <div class="p-error"></div>
+        </div>
+        <div class="p-field" id="fGradYear">
+          <label>Graduation Year</label>
+          <input class="p-input" type="text" inputmode="numeric" id="inGradYear" maxlength="4" disabled placeholder="e.g. 2026" />
+          <div class="p-error"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILLS & BIO -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="p-section-title">Skills &amp; About</div>
+      <div class="p-grid p-grid-1">
+        <div class="p-field" id="fSkills">
+          <label>Skills <span class="p-hint">(press Enter or comma to add)</span></label>
+          <div class="p-skills-box" id="pSkillsBox">
+            <input class="p-skills-input" id="inSkillsEntry" type="text" disabled placeholder="Add a skill…" />
+          </div>
+          <div class="p-error"></div>
+        </div>
+        <div class="p-field" id="fBio">
+          <label>Bio / About Me</label>
+          <textarea class="p-textarea" id="inBio" maxlength="400" disabled placeholder="A couple of sentences about your background and goals…"></textarea>
+          <div class="p-char-count"><span id="pBioCount">0</span>/400</div>
+          <div class="p-error"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINKS -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="p-section-title">Links</div>
+      <div class="p-grid">
+        <div class="p-field" id="fGithub">
+          <label>GitHub Profile</label>
+          <input class="p-input" type="text" id="inGithub" maxlength="120" disabled placeholder="github.com/username" />
+          <div class="p-error"></div>
+        </div>
+        <div class="p-field" id="fLinkedin">
+          <label>LinkedIn Profile</label>
+          <input class="p-input" type="text" id="inLinkedin" maxlength="120" disabled placeholder="linkedin.com/in/username" />
+          <div class="p-error"></div>
+        </div>
+        <div class="p-field" id="fPortfolio">
+          <label>Portfolio Website</label>
+          <input class="p-input" type="text" id="inPortfolio" maxlength="120" disabled placeholder="yourname.dev" />
+          <div class="p-error"></div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+</div>
+
+</body>
+</html>

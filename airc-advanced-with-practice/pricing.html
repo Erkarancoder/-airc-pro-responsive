@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pricing — A.I.R.C. Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="index.css" />
+<link rel="stylesheet" href="theme-pro.css" />
+<script defer src="js/plan.js"></script>
+<style>
+  .pricing-hero { text-align:center; padding: 64px 20px 20px; }
+  .pricing-hero h1 { font-family:var(--font-head); font-size: clamp(28px,5vw,44px); font-weight:800; margin-bottom:14px; }
+  .pricing-hero p { color: var(--text2); max-width:560px; margin: 0 auto; }
+  .toggle-wrap { display:flex; align-items:center; justify-content:center; gap:12px; margin: 28px 0 8px; font-size:13px; }
+  .toggle { position:relative; width:52px; height:28px; border-radius:20px; background:var(--surface2); border:1px solid var(--border); cursor:pointer; }
+  .toggle-knob { position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:50%; background:var(--accent); transition: transform .25s var(--ease); }
+  .toggle.on .toggle-knob { transform: translateX(24px); }
+  .save-chip { font-size:10px; background: rgba(0,221,180,.12); color: var(--accent); border:1px solid rgba(0,221,180,.3); padding: 2px 8px; border-radius: 10px; }
+
+  .plans-wrap { max-width: 1120px; margin: 30px auto 60px; padding: 0 20px; display:grid; grid-template-columns: repeat(3,1fr); gap: 22px; align-items:stretch; }
+  @media (max-width: 900px) { .plans-wrap { grid-template-columns: 1fr; max-width: 460px; } }
+
+  .plan-card { position:relative; padding: 30px 26px; display:flex; flex-direction:column; }
+  .plan-card.popular { border-color: rgba(0,170,255,.4) !important; transform: scale(1.03); box-shadow: 0 12px 40px rgba(0,170,255,.15); }
+  .popular-badge {
+    position:absolute; top:-13px; left:50%; transform: translateX(-50%);
+    background: linear-gradient(90deg, var(--accent2), var(--accent)); color:#04121c; font-weight:700;
+    font-size:11px; letter-spacing:1px; padding: 5px 14px; border-radius: 20px;
+  }
+  .plan-name { font-family:var(--font-head); font-size:20px; font-weight:800; }
+  .plan-desc { color:var(--text2); font-size:12.5px; margin: 6px 0 18px; }
+  .plan-price { font-family:var(--font-head); font-size: 40px; font-weight:800; }
+  .plan-price span { font-size:14px; color:var(--text2); font-weight:400; font-family:var(--font-mono); }
+  .plan-feats { list-style:none; margin: 20px 0 26px; flex:1; }
+  .plan-feats li { padding: 7px 0; font-size:13px; display:flex; gap:8px; align-items:flex-start; border-bottom: 1px dashed var(--glass-border); }
+  .plan-feats li:last-child { border-bottom:none; }
+  .plan-feats li b { color: var(--accent); }
+  .plan-cta { width:100%; }
+
+  .compare-wrap { max-width: 980px; margin: 0 auto 70px; padding: 0 20px; }
+  .compare-title { text-align:center; font-family:var(--font-head); font-size:24px; margin-bottom: 22px; }
+  table.compare { width:100%; border-collapse: collapse; font-size: 13px; }
+  table.compare th, table.compare td { padding: 12px 14px; text-align:center; border-bottom: 1px solid var(--glass-border); }
+  table.compare th { font-family:var(--font-head); }
+  table.compare td:first-child, table.compare th:first-child { text-align:left; color: var(--text2); }
+  .yes { color: var(--accent); } .no { color: var(--muted); }
+
+  .faq-wrap { max-width: 760px; margin: 0 auto 80px; padding: 0 20px; }
+  .faq-item { padding: 16px 0; border-bottom: 1px solid var(--glass-border); }
+  .faq-item h4 { font-size:14px; margin-bottom:6px; }
+  .faq-item p { color: var(--text2); font-size:13px; }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+
+<nav class="site-nav">
+  <div class="logo" onclick="location.href='landing.html'">
+    <span class="logo-icon">◈</span><span class="logo-text">A.I.R.C. <em>Pro</em></span>
+  </div>
+  <div class="site-nav-links">
+    <a href="landing.html">Home</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="index.html">Dashboard</a>
+    <a href="auth.html" class="btn sm primary" style="text-decoration:none;padding:8px 16px">Sign in</a>
+  </div>
+</nav>
+
+<div class="pricing-hero">
+  <h1>Simple, transparent pricing</h1>
+  <p>Practice smarter with a plan that grows with you — from your first mock interview to full AI-powered coding &amp; HR simulations.</p>
+  <div class="toggle-wrap">
+    <span>Monthly</span>
+    <div class="toggle" id="billToggle"><div class="toggle-knob"></div></div>
+    <span>Yearly <span class="save-chip">Save ~17%</span></span>
+  </div>
+</div>
+
+<div id="toastContainer" style="position:fixed;top:16px;right:16px;z-index:999"></div>
+
+<div class="plans-wrap">
+
+  <!-- FREE -->
+  <div class="card plan-card">
+    <div class="plan-name">Free</div>
+    <div class="plan-desc">Get a feel for AI-powered interviews.</div>
+    <div class="plan-price">$0<span>/mo</span></div>
+    <ul class="plan-feats">
+      <li>✅ Basic mock interviews</li>
+      <li>✅ Limited questions per session</li>
+      <li>✅ Basic report (on-screen)</li>
+      <li>✅ Session history</li>
+    </ul>
+    <button class="btn plan-cta" data-plan="free">Continue Free</button>
+  </div>
+
+  <!-- PRO -->
+  <div class="card plan-card popular">
+    <div class="popular-badge">MOST POPULAR</div>
+    <div class="plan-name">Pro</div>
+    <div class="plan-desc">For serious, ongoing interview prep.</div>
+    <div class="plan-price"><span class="price-val" data-m="7" data-y="70">$7</span><span class="price-period">/mo</span></div>
+    <ul class="plan-feats">
+      <li><b>✓</b> Everything in Free</li>
+      <li><b>✓</b> Unlimited interviews</li>
+      <li><b>✓</b> Resume-based interviews</li>
+      <li><b>✓</b> Company-specific interviews</li>
+      <li><b>✓</b> PDF reports</li>
+      <li><b>✓</b> Performance analytics</li>
+    </ul>
+    <button class="btn primary plan-cta" data-plan="pro">Upgrade to Pro</button>
+  </div>
+
+  <!-- PREMIUM -->
+  <div class="card plan-card">
+    <div class="plan-name">Premium</div>
+    <div class="plan-desc">The full commercial-grade experience.</div>
+    <div class="plan-price"><span class="price-val" data-m="20" data-y="200">$20</span><span class="price-period">/mo</span></div>
+    <ul class="plan-feats">
+      <li><b>✓</b> Everything in Pro</li>
+      <li><b>✓</b> AI follow-up questions</li>
+      <li><b>✓</b> Coding interviews</li>
+      <li><b>✓</b> Voice analysis</li>
+      <li><b>✓</b> Face analysis</li>
+      <li><b>✓</b> HR simulation</li>
+      <li><b>✓</b> Advanced dashboard</li>
+    </ul>
+    <button class="btn accent plan-cta" data-plan="premium">Go Premium</button>
+  </div>
+
+</div>
+
+<div class="compare-wrap">
+  <h2 class="compare-title">Compare plans</h2>
+  <table class="compare">
+    <thead><tr><th>Feature</th><th>Free</th><th>Pro</th><th>Premium</th></tr></thead>
+    <tbody>
+      <tr><td>Mock interviews</td><td>Limited</td><td class="yes">Unlimited</td><td class="yes">Unlimited</td></tr>
+      <tr><td>Resume-based interviews</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Company-specific interviews</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>PDF reports</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Performance analytics</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>AI follow-up questions</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+      <tr><td>Coding interviews</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+      <tr><td>Voice analysis</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+      <tr><td>Face analysis</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+      <tr><td>HR simulation</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+      <tr><td>Advanced dashboard</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="faq-wrap">
+  <h2 class="compare-title">Frequently asked</h2>
+  <div class="faq-item"><h4>Can I switch plans anytime?</h4><p>Yes — your plan is applied instantly and you can change it whenever you like.</p></div>
+  <div class="faq-item"><h4>Is my data private?</h4><p>All interview data is stored locally in your browser (IndexedDB) — nothing is uploaded to a server.</p></div>
+  <div class="faq-item"><h4>Do unused features disappear on Free?</h4><p>No — this build keeps every feature usable so you can try the full product; plan tags simply show what a commercial rollout would gate.</p></div>
+</div>
+
+<script>
+  const toggle = document.getElementById('billToggle');
+  let yearly = false;
+  toggle.addEventListener('click', () => {
+    yearly = !yearly;
+    toggle.classList.toggle('on', yearly);
+    document.querySelectorAll('.price-val').forEach(el => {
+      el.textContent = '$' + (yearly ? el.dataset.y : el.dataset.m);
+    });
+    document.querySelectorAll('.price-period').forEach(el => el.textContent = yearly ? '/yr' : '/mo');
+  });
+
+  function toast(msg) {
+    const c = document.getElementById('toastContainer');
+    const el = document.createElement('div');
+    el.className = 'toast ok';
+    el.style.cssText = 'background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:8px;font-size:12px;margin-top:8px';
+    el.textContent = msg;
+    c.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+  }
+
+  document.querySelectorAll('.plan-cta').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const plan = btn.dataset.plan;
+      if (window.AIRC_PLAN) window.AIRC_PLAN.set(plan);
+      toast(`Plan set to ${plan.toUpperCase()} ✓`);
+      setTimeout(() => { window.location.href = 'index.html'; }, 900);
+    });
+  });
+</script>
+</body>
+</html>

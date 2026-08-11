@@ -1,0 +1,540 @@
+/* ═══════════════════════════════════════════
+   ai-tutor.css — Practice / AI Communication Coach
+   Isolated stylesheet, only loaded by ai-tutor.html.
+   Modern light SaaS theme — intentionally different
+   from the dark terminal theme used by the rest of
+   AIRC, so it does not touch or override any class
+   used elsewhere (.card/.btn/.tab/etc are avoided;
+   everything here is scoped under "pz-").
+═══════════════════════════════════════════ */
+
+:root {
+  --pz-bg:        #f4f6fb;
+  --pz-surface:   #ffffff;
+  --pz-surface2:  #f8f9fd;
+  --pz-border:    #e6e9f2;
+  --pz-text:      #1c2333;
+  --pz-text2:     #626c85;
+  --pz-muted:     #97a0b8;
+  --pz-accent:    #4f6df5;
+  --pz-accent2:   #16b98a;
+  --pz-accent-soft: #eef1ff;
+  --pz-danger:    #e0435c;
+  --pz-radius:    16px;
+  --pz-radius-sm: 10px;
+  --pz-shadow:    0 8px 28px rgba(30, 40, 80, .08);
+  --pz-font:      'Inter', 'Poppins', sans-serif;
+  --pz-font-head: 'Poppins', 'Inter', sans-serif;
+}
+
+/* Cover the dark app body/noise overlay for this page only, without
+   editing index.css or theme-pro.css. */
+body.pz-body {
+  background: var(--pz-bg) !important;
+  overflow: hidden;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+body.pz-body .noise { display: none !important; }
+
+.pz-shell, .pz-shell * { box-sizing: border-box; }
+
+.pz-shell {
+  position: relative;
+  z-index: 2;
+  --pz-members-col: 264px;
+  display: grid;
+  grid-template-columns: 260px 1fr var(--pz-members-col);
+  height: 100vh;
+  font-family: var(--pz-font);
+  color: var(--pz-text);
+  max-width: 100vw;
+}
+
+/* ── MOBILE / TABLET TOP BAR (hidden on desktop) ── */
+.pz-mobile-topbar { display: none; }
+
+/* ── SHARED OVERLAY for off-canvas drawers (hidden on desktop) ── */
+.pz-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 20, 35, .45);
+  z-index: 60;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.pz-overlay.pz-overlay-active { display: block; opacity: 1; }
+
+.pz-sidebar-close-btn,
+.pz-members-close-btn { display: none; }
+
+/* ── SIDEBAR ── */
+.pz-sidebar {
+  background: var(--pz-surface);
+  border-right: 1px solid var(--pz-border);
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.pz-logo { display: flex; align-items: center; gap: 8px; padding: 4px 8px 22px; font-family: var(--pz-font-head); font-weight: 800; font-size: 18px; }
+.pz-logo-mark { color: var(--pz-accent); font-size: 22px; }
+
+.pz-nav { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+.pz-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--pz-radius-sm);
+  color: var(--pz-text2); font-weight: 500; font-size: 14px;
+  cursor: pointer; transition: background .15s, color .15s;
+}
+.pz-nav-item:hover { background: var(--pz-surface2); color: var(--pz-text); }
+.pz-nav-item.pz-nav-active { background: var(--pz-accent-soft); color: var(--pz-accent); font-weight: 600; }
+.pz-nav-ico { width: 20px; text-align: center; }
+
+.pz-nav-section-title {
+  font-size: 11px; letter-spacing: 1.2px; color: var(--pz-muted);
+  font-weight: 700; margin: 18px 12px 8px;
+}
+
+.pz-sidebar-bottom { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--pz-border); }
+.pz-voice-settings { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 14px; font-size: 12px; color: var(--pz-text2); }
+.pz-voice-settings select {
+  padding: 6px 8px; border-radius: 8px; border: 1px solid var(--pz-border);
+  background: var(--pz-surface2); color: var(--pz-text); font-family: var(--pz-font); font-size: 13px;
+}
+.pz-side-user { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--pz-radius-sm); cursor: pointer; font-size: 13px; font-weight: 500; }
+.pz-side-user:hover { background: var(--pz-surface2); }
+.pz-side-avatar {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--pz-accent);
+  color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;
+}
+
+/* ── MAIN ── */
+.pz-main { overflow-y: auto; padding: 32px clamp(20px, 4vw, 48px); }
+.pz-view { display: none; }
+.pz-view.pz-view-active { display: block; animation: pzFadeUp .35s cubic-bezier(.16,.84,.44,1) both; }
+
+@keyframes pzFadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pzFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── HOME ── */
+.pz-home-header h1 { font-family: var(--pz-font-head); font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+.pz-home-header em { color: var(--pz-accent); font-style: normal; }
+.pz-home-header p { color: var(--pz-text2); font-size: 14px; margin-bottom: 28px; max-width: 640px; overflow-wrap: anywhere; }
+.pz-home-header h1 { overflow-wrap: anywhere; }
+
+.pz-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+.pz-card {
+  background: var(--pz-surface); border: 1px solid var(--pz-border); border-radius: var(--pz-radius);
+  padding: 22px; box-shadow: var(--pz-shadow); display: flex; flex-direction: column; gap: 14px;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.pz-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(30,40,80,.12); }
+
+.pz-card-top { display: flex; align-items: center; gap: 12px; }
+.pz-card-icon {
+  width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.pz-card-icon-comm { background: #eef1ff; }
+.pz-card-icon-gd   { background: #e9fbf3; }
+.pz-card-icon-int  { background: #fff2ea; }
+
+.pz-card-title { font-family: var(--pz-font-head); font-weight: 700; font-size: 16px; }
+.pz-card-mentor { font-size: 12.5px; color: var(--pz-accent); font-weight: 600; margin-top: 2px; }
+.pz-card-desc { font-size: 13px; color: var(--pz-text2); line-height: 1.55; flex-grow: 1; overflow-wrap: anywhere; }
+
+.pz-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.pz-tag {
+  font-size: 11px; padding: 4px 9px; border-radius: 20px; background: var(--pz-surface2);
+  border: 1px solid var(--pz-border); color: var(--pz-text2); font-weight: 500;
+}
+
+.pz-card-btn {
+  margin-top: 4px; padding: 11px 16px; border: none; border-radius: 10px;
+  background: var(--pz-accent); color: #fff; font-family: var(--pz-font); font-weight: 600; font-size: 14px;
+  cursor: pointer; transition: filter .15s, transform .15s;
+}
+.pz-card-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+/* ── SESSION VIEWS (chat interfaces) ── */
+.pz-session-header {
+  display: flex; align-items: center; gap: 16px; padding-bottom: 16px; margin-bottom: 18px;
+  border-bottom: 1px solid var(--pz-border); flex-wrap: wrap;
+}
+.pz-back-btn {
+  border: 1px solid var(--pz-border); background: var(--pz-surface); border-radius: 8px;
+  padding: 7px 12px; font-size: 13px; color: var(--pz-text2); cursor: pointer; font-family: var(--pz-font);
+}
+.pz-back-btn:hover { color: var(--pz-text); border-color: var(--pz-accent); }
+
+.pz-session-mentor { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 220px; }
+.pz-avatar {
+  width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-family: var(--pz-font-head); flex-shrink: 0;
+}
+.pz-avatar-female { background: linear-gradient(135deg, #ff8fb1, #ff5f96); }
+.pz-avatar-male    { background: linear-gradient(135deg, #5f8bff, #4f6df5); }
+
+.pz-session-title { font-family: var(--pz-font-head); font-weight: 700; font-size: 16px; }
+.pz-session-sub { font-size: 12.5px; color: var(--pz-text2); display: flex; align-items: center; gap: 6px; }
+.pz-online-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pz-accent2); display: inline-block; box-shadow: 0 0 0 3px rgba(22,185,138,.18); }
+
+.pz-session-meta { display: flex; align-items: center; gap: 10px; }
+.pz-badge {
+  font-size: 11.5px; font-weight: 700; padding: 5px 11px; border-radius: 20px;
+  background: var(--pz-accent-soft); color: var(--pz-accent);
+}
+.pz-progress-text { font-size: 12.5px; color: var(--pz-muted); }
+
+.pz-topic-banner {
+  background: var(--pz-accent-soft); color: var(--pz-accent); font-weight: 600; font-size: 13.5px;
+  padding: 12px 16px; border-radius: var(--pz-radius-sm); margin-bottom: 16px;
+}
+
+/* ── CHAT ── */
+.pz-chat {
+  background: var(--pz-surface); border: 1px solid var(--pz-border); border-radius: var(--pz-radius);
+  padding: 20px; min-height: 320px; max-height: 52vh; overflow-y: auto; display: flex; flex-direction: column; gap: 14px;
+}
+.pz-msg { display: flex; flex-direction: column; max-width: 78%; animation: pzFadeUp .3s ease both; }
+.pz-msg-mentor { align-self: flex-start; }
+.pz-msg-student { align-self: flex-end; align-items: flex-end; }
+.pz-msg-system { align-self: center; max-width: 90%; }
+
+.pz-msg-name { font-size: 11px; font-weight: 700; color: var(--pz-muted); margin-bottom: 4px; padding: 0 4px; }
+.pz-bubble {
+  padding: 12px 15px; border-radius: 14px; font-size: 13.5px; line-height: 1.55;
+  overflow-wrap: anywhere; word-break: break-word;
+}
+.pz-msg-mentor .pz-bubble { background: var(--pz-surface2); border: 1px solid var(--pz-border); border-top-left-radius: 4px; }
+.pz-msg-student .pz-bubble { background: var(--pz-accent); color: #fff; border-top-right-radius: 4px; }
+.pz-msg-system .pz-bubble { background: #fff6ea; color: #9a6a1e; border: 1px solid #ffe4b3; text-align: center; font-size: 12.5px; }
+
+.pz-typing .pz-typing, .pz-typing { display: flex; gap: 4px; align-items: center; padding: 14px 15px; }
+.pz-typing span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--pz-muted);
+  animation: pzBounce 1.1s infinite ease-in-out;
+}
+.pz-typing span:nth-child(2) { animation-delay: .15s; }
+.pz-typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes pzBounce { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
+
+/* ── MIC BAR ── */
+.pz-mic-bar { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 18px; }
+.pz-mic-btn {
+  border: none; border-radius: 30px; padding: 13px 30px; font-family: var(--pz-font); font-weight: 700; font-size: 14px;
+  background: var(--pz-accent); color: #fff; cursor: pointer; transition: transform .15s, filter .15s, background .2s;
+  box-shadow: 0 6px 18px rgba(79,109,245,.28);
+}
+.pz-mic-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.pz-mic-btn.pz-mic-listening { background: var(--pz-danger); box-shadow: 0 0 0 8px rgba(224,67,92,.14); animation: pzPulseMic 1.4s infinite; }
+.pz-mic-btn.pz-mic-processing { background: var(--pz-muted); cursor: default; box-shadow: none; }
+@keyframes pzPulseMic { 0%,100% { box-shadow: 0 0 0 8px rgba(224,67,92,.14);} 50% { box-shadow: 0 0 0 14px rgba(224,67,92,.06);} }
+
+.pz-mic-status { font-size: 12.5px; color: var(--pz-text2); min-width: 90px; }
+
+/* ── CATEGORY PICKER (interview) ── */
+.pz-category-intro { font-size: 13.5px; color: var(--pz-text2); margin-bottom: 14px; }
+.pz-category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+.pz-category-btn {
+  padding: 13px 10px; border-radius: var(--pz-radius-sm); border: 1px solid var(--pz-border);
+  background: var(--pz-surface); font-family: var(--pz-font); font-weight: 600; font-size: 13px;
+  color: var(--pz-text); cursor: pointer; transition: all .15s;
+}
+.pz-category-btn:hover { border-color: var(--pz-accent); color: var(--pz-accent); background: var(--pz-accent-soft); transform: translateY(-1px); }
+
+/* ── REPORT PANEL ── */
+.pz-report-panel {
+  margin-top: 20px; background: var(--pz-surface); border: 1px solid var(--pz-border); border-radius: var(--pz-radius);
+  padding: 22px; animation: pzFadeUp .35s ease both;
+}
+.pz-report-panel h3 { font-family: var(--pz-font-head); font-size: 16px; margin-bottom: 14px; }
+.pz-metric-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 13px; }
+.pz-metric-label { width: 140px; color: var(--pz-text2); flex-shrink: 0; }
+.pz-metric-bar { flex: 1; height: 8px; border-radius: 6px; background: var(--pz-surface2); overflow: hidden; }
+.pz-metric-fill { height: 100%; background: linear-gradient(90deg, var(--pz-accent), var(--pz-accent2)); border-radius: 6px; }
+.pz-metric-value { width: 48px; text-align: right; font-weight: 700; color: var(--pz-text); }
+.pz-report-split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 16px 0; }
+.pz-report-heading { font-weight: 700; font-size: 12.5px; color: var(--pz-text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+.pz-report-split ul { padding-left: 18px; font-size: 13px; color: var(--pz-text); line-height: 1.7; }
+.pz-overall { border-top: 1px solid var(--pz-border); padding-top: 12px; margin-top: 4px; font-size: 15px; }
+.pz-overall .pz-metric-label { font-weight: 700; color: var(--pz-text); }
+.pz-overall .pz-metric-value { color: var(--pz-accent); font-size: 17px; }
+
+/* ── RIGHT SIDE MEMBER PANEL (Practice module — live/dynamic) ── */
+.pz-members-panel {
+  border-left: 1px solid var(--pz-border);
+  background: var(--pz-surface);
+  padding: 22px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pz-members-header { display: flex; align-items: center; justify-content: space-between; }
+.pz-members-title {
+  font-family: var(--pz-font-head);
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--pz-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pz-members-title::before { content: "👥"; font-size: 15px; }
+.pz-members-list { display: flex; flex-direction: column; gap: 10px; }
+
+.pz-member-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: var(--pz-radius-sm);
+  background: var(--pz-surface2);
+  animation: pzFadeUp .25s ease both;
+}
+.pz-member-row.pz-member-self { background: var(--pz-accent-soft); }
+
+.pz-member-avatar-wrap { position: relative; flex-shrink: 0; width: 34px; height: 34px; }
+.pz-member-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  object-fit: cover; display: block;
+  background: var(--pz-surface2);
+  border: 1px solid var(--pz-border);
+}
+.pz-member-avatar svg { width: 34px; height: 34px; border-radius: 50%; display: block; }
+
+.pz-member-status-dot {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--pz-accent2);
+  border: 2px solid var(--pz-surface);
+}
+
+.pz-member-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.pz-member-name {
+  font-size: 13px; font-weight: 600; color: var(--pz-text);
+  display: flex; align-items: center; gap: 5px; min-width: 0;
+}
+.pz-member-name .pz-member-ico { font-size: 12px; opacity: .7; flex-shrink: 0; }
+.pz-member-name-text {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pz-member-you-tag {
+  font-size: 10px; font-weight: 700; color: var(--pz-accent);
+  background: #fff; border: 1px solid var(--pz-accent-soft);
+  border-radius: 5px; padding: 1px 5px; margin-left: 4px; flex-shrink: 0;
+}
+.pz-member-sub { font-size: 11px; color: var(--pz-text2); }
+
+.pz-members-empty { font-size: 12.5px; color: var(--pz-muted); text-align: center; padding: 20px 0; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   Breakpoints:
+     > 1024px  → Desktop / laptop: original 3-column
+                 shell (sidebar + main + member panel),
+                 unchanged.
+     768–1024px→ Tablet: sidebar & member panel become
+                 off-canvas drawers (more room for
+                 content); practice cards use a 2-column
+                 grid.
+     ≤ 767px   → Phone: same off-canvas drawers, cards
+                 stack 1-per-row, mic bar pins to the
+                 bottom of the screen, chat/avatars/
+                 type scale down further.
+═══════════════════════════════════════════ */
+
+/* ── TABLET + PHONE (≤1024px): off-canvas sidebar & member panel ── */
+@media (max-width: 1024px) {
+  .pz-shell {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100vh;
+    /* Drop the stacking context created by position:relative + z-index so the
+       fixed-position drawers/overlay (both higher z-index, one of them a
+       sibling outside .pz-shell) stack correctly above ALL shell content
+       instead of being trapped inside .pz-shell's own local stacking order. */
+    position: static;
+    z-index: auto;
+  }
+  body.pz-body { overflow-y: auto; overflow-x: hidden; }
+
+  /* Mobile/tablet top bar replaces the inline logo row */
+  .pz-mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 45;
+    background: var(--pz-surface);
+    border-bottom: 1px solid var(--pz-border);
+    padding: 10px 14px;
+    max-width: 100vw;
+  }
+  .pz-hamburger-btn,
+  .pz-members-toggle-btn {
+    border: 1px solid var(--pz-border);
+    background: var(--pz-surface2);
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: var(--pz-font);
+    flex-shrink: 0;
+  }
+  .pz-hamburger-btn {
+    width: 40px; height: 40px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px;
+  }
+  .pz-hamburger-btn span {
+    display: block; width: 18px; height: 2px; border-radius: 2px;
+    background: var(--pz-text);
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  .pz-members-toggle-btn {
+    height: 40px; padding: 0 12px;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--pz-text2);
+  }
+  .pz-members-toggle-ico { font-size: 15px; }
+  .pz-members-toggle-count {
+    background: var(--pz-accent); color: #fff; border-radius: 20px;
+    font-size: 11px; font-weight: 700; padding: 1px 7px; min-width: 16px; text-align: center;
+  }
+  .pz-mobile-logo {
+    display: flex; align-items: center; gap: 6px; min-width: 0;
+    font-family: var(--pz-font-head); font-weight: 800; font-size: 15px;
+  }
+
+  /* Sidebar → off-canvas drawer */
+  .pz-sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: min(80vw, 280px);
+    z-index: 65;
+    transform: translateX(-100%);
+    transition: transform .28s cubic-bezier(.2,.8,.3,1);
+    flex-direction: column;
+    overflow-y: auto;
+    box-shadow: 14px 0 40px rgba(20, 25, 45, .18);
+  }
+  .pz-sidebar.pz-sidebar-open { transform: translateX(0); }
+  .pz-sidebar-close-btn {
+    display: flex; align-items: center; justify-content: center;
+    align-self: flex-end;
+    width: 32px; height: 32px; margin-bottom: 6px;
+    border: 1px solid var(--pz-border); border-radius: 8px;
+    background: var(--pz-surface2); color: var(--pz-text2);
+    font-size: 14px; cursor: pointer;
+  }
+  .pz-nav { flex-direction: column; }
+  .pz-nav-section-title { display: block; }
+  .pz-sidebar-bottom { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--pz-border); display: block; }
+  .pz-voice-settings { flex-direction: column; align-items: flex-start; padding: 8px 10px 14px; }
+
+  .pz-main { padding: 18px 16px; overflow: visible; max-width: 100vw; }
+
+  /* Member panel → off-canvas drawer */
+  .pz-members-panel {
+    display: flex;
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(84vw, 300px);
+    z-index: 65;
+    transform: translateX(100%);
+    transition: transform .28s cubic-bezier(.2,.8,.3,1);
+    box-shadow: -14px 0 40px rgba(20, 25, 45, .18);
+  }
+  .pz-members-panel.pz-members-open { transform: translateX(0); }
+  .pz-members-close-btn {
+    display: flex; align-items: center; justify-content: center;
+    align-self: flex-end;
+    width: 32px; height: 32px; margin-bottom: 4px;
+    border: 1px solid var(--pz-border); border-radius: 8px;
+    background: var(--pz-surface2); color: var(--pz-text2);
+    font-size: 14px; cursor: pointer;
+  }
+
+  /* Practice cards: 2-per-row on tablet */
+  .pz-card-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Session header wraps cleanly without overlap */
+  .pz-session-mentor { min-width: 180px; }
+  .pz-session-meta { flex-wrap: wrap; }
+}
+
+/* ── PHONE (≤767px) — 768px itself stays in the tablet 2-column bucket above ── */
+@media (max-width: 767px) {
+  .pz-card-grid { grid-template-columns: 1fr; gap: 14px; }
+
+  .pz-home-header h1 { font-size: 21px; }
+  .pz-home-header p { font-size: 13px; margin-bottom: 20px; }
+
+  .pz-card { padding: 18px; }
+
+  /* Session / chat header: stack cleanly, no overlap */
+  .pz-session-header { gap: 10px; padding-bottom: 12px; margin-bottom: 14px; }
+  .pz-session-mentor { min-width: 0; flex-basis: 100%; }
+  .pz-avatar { width: 36px; height: 36px; font-size: 14px; }
+  .pz-session-title { font-size: 14.5px; }
+  .pz-session-sub { font-size: 11.5px; flex-wrap: wrap; }
+  .pz-session-meta { width: 100%; justify-content: flex-start; }
+  .pz-back-btn { padding: 6px 10px; font-size: 12.5px; }
+
+  /* Chat fills the screen width; own scroll area sized for phones */
+  .pz-chat { padding: 14px; gap: 12px; min-height: 260px; max-height: 50vh; }
+  .pz-msg { max-width: 90%; }
+  .pz-bubble { font-size: 13px; padding: 10px 13px; }
+
+  /* Mic bar pinned to the bottom of the viewport — always reachable */
+  .pz-mic-bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 40;
+    margin: 0;
+    background: var(--pz-surface);
+    border-top: 1px solid var(--pz-border);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    box-shadow: 0 -6px 18px rgba(20, 25, 45, .08);
+  }
+  .pz-mic-btn { padding: 12px 22px; font-size: 13.5px; }
+  .pz-mic-status { min-width: 0; font-size: 12px; }
+
+  /* Reserve room so fixed mic bar never covers the last message / report */
+  #pzView-communication,
+  #pzView-gd,
+  #pzView-interview { padding-bottom: 74px; }
+
+  .pz-report-panel { padding: 16px; }
+  .pz-report-split { grid-template-columns: 1fr; gap: 14px; }
+  .pz-metric-label { width: 96px; font-size: 12px; }
+  .pz-metric-value { width: 40px; }
+
+  .pz-category-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+  .pz-category-btn { padding: 11px 8px; font-size: 12.5px; }
+
+  .pz-members-panel { width: min(88vw, 280px); padding: 18px 14px; }
+}
+
+/* ── SMALL PHONE (≤380px) ── */
+@media (max-width: 380px) {
+  .pz-mobile-logo .pz-logo-text { display: none; }
+  .pz-members-toggle-btn { padding: 0 9px; }
+  .pz-home-header h1 { font-size: 19px; }
+  .pz-card-top { gap: 10px; }
+  .pz-card-icon { width: 40px; height: 40px; font-size: 18px; }
+  .pz-tags { gap: 5px; }
+  .pz-tag { font-size: 10.5px; padding: 3px 8px; }
+  .pz-msg { max-width: 94%; }
+  .pz-category-grid { grid-template-columns: repeat(2, 1fr); }
+  .pz-mic-btn { padding: 11px 18px; font-size: 13px; }
+}

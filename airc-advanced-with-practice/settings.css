@@ -1,0 +1,163 @@
+/* ═══════════════════════════════════════════════════════════════
+   settings.css
+   Styles for the Settings page (settings.html / js/settings.js).
+   Reuses the existing theme variables (--bg, --accent, --font-head…)
+   from index.css / theme-pro.css, and the .p-* component patterns
+   from profile.css for visual consistency. All rules are scoped to
+   dedicated classes so nothing here touches existing selectors.
+═══════════════════════════════════════════════════════════════ */
+
+.settings-app { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 20px 20px 70px; }
+
+.settings-topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 14px 4px 22px; flex-wrap: wrap;
+}
+
+.settings-header { margin-bottom: 18px; }
+.settings-header h1 { font-family: var(--font-head); font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+.settings-header p { font-size: 12.5px; color: var(--text2); }
+
+/* ── Layout: sticky section nav + content ── */
+.settings-layout { display: grid; grid-template-columns: 220px 1fr; gap: 20px; align-items: start; }
+
+.settings-nav {
+  position: sticky; top: 16px; display: flex; flex-direction: column; gap: 3px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 8px;
+}
+.settings-nav button {
+  display: flex; align-items: center; gap: 9px; text-align: left;
+  padding: 9px 11px; border-radius: 7px; border: none; background: transparent;
+  color: var(--text2); cursor: pointer; font-family: var(--font-mono); font-size: 12px;
+  transition: background .18s ease, color .18s ease;
+}
+.settings-nav button .s-nav-icon { font-size: 14px; }
+.settings-nav button:hover { color: var(--text); background: var(--surface2); }
+.settings-nav button.active { color: var(--accent); background: var(--surface2); box-shadow: inset 2px 0 0 var(--accent); }
+
+.settings-sections { display: flex; flex-direction: column; gap: 16px; }
+
+.s-section { scroll-margin-top: 16px; animation: s-card-in .4s cubic-bezier(.16,.84,.44,1) both; }
+@keyframes s-card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.s-section-title {
+  display: flex; align-items: center; gap: 9px;
+  font-family: var(--font-head); font-size: 14.5px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.s-section-title .s-icon { font-size: 17px; }
+.s-section-sub { font-size: 11.5px; color: var(--text2); margin-bottom: 16px; }
+
+/* ── Rows ── */
+.s-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 12px 0; border-top: 1px solid var(--border);
+}
+.s-row:first-of-type { border-top: none; padding-top: 4px; }
+.s-row-label { font-size: 12.5px; color: var(--text); font-weight: 600; }
+.s-row-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.s-row-control { flex: 0 0 auto; }
+.s-row-control select, .s-row-control input[type="text"] { min-width: 160px; }
+
+.s-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+@media (max-width: 720px) { .s-grid { grid-template-columns: 1fr; } }
+
+/* ── Toggle switch ── */
+.s-toggle { position: relative; display: inline-block; width: 42px; height: 24px; flex: 0 0 auto; }
+.s-toggle input { opacity: 0; width: 0; height: 0; }
+.s-toggle .s-toggle-track {
+  position: absolute; inset: 0; border-radius: 20px; cursor: pointer;
+  background: var(--surface2); border: 1px solid var(--border);
+  transition: background .2s ease, border-color .2s ease;
+}
+.s-toggle .s-toggle-track::before {
+  content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 50%;
+  transform: translateY(-50%); border-radius: 50%; background: var(--muted);
+  transition: transform .2s cubic-bezier(.16,.84,.44,1), background .2s ease;
+}
+.s-toggle input:checked + .s-toggle-track { background: rgba(0,221,180,.14); border-color: var(--accent); }
+.s-toggle input:checked + .s-toggle-track::before { transform: translate(18px,-50%); background: var(--accent); box-shadow: 0 0 8px rgba(0,221,180,.5); }
+.s-toggle input:focus-visible + .s-toggle-track { box-shadow: 0 0 0 2px rgba(0,170,255,.4); }
+
+/* ── Theme picker ── */
+.s-theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.s-theme-card {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 14px 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface2);
+  cursor: pointer; transition: border-color .18s ease, transform .18s ease;
+}
+.s-theme-card:hover { transform: translateY(-1px); }
+.s-theme-card.active { border-color: var(--accent); box-shadow: var(--glow); }
+.s-theme-card input { position: absolute; opacity: 0; pointer-events: none; }
+.s-theme-swatch { width: 100%; height: 44px; border-radius: 7px; border: 1px solid rgba(255,255,255,.08); }
+.s-theme-swatch.dark { background: linear-gradient(135deg,#0d1420,#111926); }
+.s-theme-swatch.light { background: linear-gradient(135deg,#ffffff,#eef2f7); }
+.s-theme-swatch.auto { background: linear-gradient(135deg,#0d1420 50%,#eef2f7 50%); }
+.s-theme-card span { font-size: 11px; color: var(--text2); }
+.s-theme-card.active span { color: var(--accent); }
+
+/* ── Radio pill group (privacy visibility) ── */
+.s-pill-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.s-pill { position: relative; }
+.s-pill input { position: absolute; opacity: 0; pointer-events: none; }
+.s-pill label {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px;
+  border: 1px solid var(--border); color: var(--text2); font-size: 11.5px; cursor: pointer;
+  transition: all .18s ease;
+}
+.s-pill input:checked + label { border-color: var(--accent); color: var(--accent); background: rgba(0,221,180,.08); }
+
+/* ── Danger zone actions ── */
+.s-danger-list { display: flex; flex-direction: column; gap: 10px; }
+.s-danger-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  padding: 12px 14px; border-radius: 9px; border: 1px solid var(--border); background: var(--surface2);
+}
+.s-danger-item.critical { border-color: rgba(255,71,87,.3); }
+
+/* ── Account info block ── */
+.s-account-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+.s-account-avatar { width: 54px; height: 54px; border-radius: 50%; overflow: hidden; flex: 0 0 auto; border: 2px solid var(--glass-border, rgba(255,255,255,.1)); }
+.s-account-avatar svg, .s-account-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.s-account-name { font-family: var(--font-head); font-weight: 800; font-size: 16px; }
+.s-account-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+/* ── Sticky footer action bar ── */
+.settings-actionbar {
+  position: sticky; bottom: 0; margin-top: 22px; padding: 14px 16px; z-index: 20;
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap;
+  border-radius: 12px; border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)), var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur, 14px));
+  box-shadow: 0 8px 30px rgba(0,0,0,.35);
+}
+.settings-actionbar .s-unsaved { margin-right: auto; font-size: 11px; color: var(--warn); opacity: 0; transition: opacity .2s ease; }
+.settings-actionbar .s-unsaved.show { opacity: 1; }
+
+/* ── Confirm dialog (reused for all destructive Privacy actions) ── */
+.s-confirm-backdrop {
+  position: fixed; inset: 0; background: rgba(5,10,20,.72); backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center; z-index: 300;
+  animation: fadeIn .2s ease;
+}
+.s-confirm-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 22px; width: 92%; max-width: 380px; animation: s-card-in .25s cubic-bezier(.16,.84,.44,1) both;
+}
+.s-confirm-box h3 { font-family: var(--font-head); font-size: 15px; margin-bottom: 8px; }
+.s-confirm-box p { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 18px; }
+.s-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .settings-layout { grid-template-columns: 1fr; }
+  .settings-nav { position: static; flex-direction: row; overflow-x: auto; }
+  .settings-nav button { flex: 0 0 auto; white-space: nowrap; }
+}
+@media (max-width: 600px) {
+  .s-theme-grid { grid-template-columns: 1fr; }
+  .settings-actionbar { flex-direction: column; align-items: stretch; }
+  .settings-actionbar .s-unsaved { margin-right: 0; text-align: center; }
+  .s-danger-item { flex-direction: column; align-items: flex-start; }
+}
